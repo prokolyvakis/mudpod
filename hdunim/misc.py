@@ -18,6 +18,15 @@ def assert_correct_input_size(arr: np.ndarray) -> None:
     )
 
 
+def ordinal(n: int):
+    """Get the ordinal of the number."""
+    if 11 <= (n % 100) <= 13:
+        suffix = 'th'
+    else:
+        suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
+    return str(n) + suffix
+
+
 def set_seed(s: int):
     """Set the random seed.
     Args:

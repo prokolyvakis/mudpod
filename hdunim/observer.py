@@ -1,11 +1,13 @@
-"""Observers module."""
+"""Observers definition."""
 from dataclasses import dataclass
 from typing import Protocol
 
+from loguru import logger
 import numpy as np
 from scipy.spatial.distance import mahalanobis
 
 from hdunim.misc import assert_correct_input_size
+from hdunim.misc import ordinal
 
 
 class Observer(Protocol):
@@ -13,6 +15,7 @@ class Observer(Protocol):
 
     def get(self, arr: np.ndarray) -> np.ndarray:
         """Get the observer.
+
         Args:
             arr: A 2D numpy array with the first dimension being the number of different
                 datapoints and the second being the features' size.
@@ -52,8 +55,14 @@ class PercentileObserver(Observer):
             ds,
             int(100 * self.percentile)
         )
+
+        logger.debug(f'The percentile threshold is {t}.')
+
         ps = np.argwhere(
             ds > t
         ).ravel()
 
-        return np.random.choice(ps, size=1, replace=False)
+        o = np.random.choice(ps, size=1, replace=False)[0]
+
+        logger.debug(f'The observer chosen was the {ordinal(o)} datapoint.')
+        return o
