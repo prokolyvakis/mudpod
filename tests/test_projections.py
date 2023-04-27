@@ -5,9 +5,9 @@ import numpy as np
 from sklearn.datasets import make_blobs
 
 from hdunim.misc import set_seed
-from hdunim.projections import JohnsonLindenstraussDim
+from hdunim.projections import JohnsonLindenstrauss
 from hdunim.projections import JohnsonLindenstraussOrAscend
-from hdunim.projections import IdentityDim
+from hdunim.projections import IdentityProjector
 from hdunim.observer import PercentileObserver
 from hdunim.projections import View
 
@@ -15,27 +15,27 @@ set_seed(42)
 
 
 def test_identity_dim() -> None:
-    """Test that IdentityDim works smoothly."""
+    """Test that IdentityProjector works smoothly."""
 
-    assert 42 == IdentityDim.estimate(42)
+    assert 42 == IdentityProjector.estimate_dim(42)
 
 
 @pytest.mark.parametrize("input_dim,projection_dim", [(32, 5), (128, 7), (1024, 10)])
 def test_johnson_lindenstrauss_dim(input_dim, projection_dim) -> None:
-    """Test that JohnsonLindenstraussDim works smoothly."""
+    """Test that JohnsonLindenstrauss works smoothly."""
 
-    assert projection_dim == JohnsonLindenstraussDim.estimate(input_dim)
+    assert projection_dim == JohnsonLindenstrauss.estimate_dim(input_dim)
 
 
 @pytest.mark.parametrize("inp_dim,projection_dim", [(32, 5), (64, 6), (2, 4), (3, 8)])
 def test_johnson_lindenstrauss_or_ascend_dim(inp_dim: int, projection_dim: int) -> None:
-    """Test that JohnsonLindenstraussDim works smoothly."""
+    """Test that JohnsonLindenstrauss works smoothly."""
 
-    assert projection_dim == JohnsonLindenstraussOrAscend.estimate(inp_dim)
+    assert projection_dim == JohnsonLindenstraussOrAscend.estimate_dim(inp_dim)
 
 @pytest.mark.parametrize(
     "projection_dim",
-    [IdentityDim, JohnsonLindenstraussDim, JohnsonLindenstraussOrAscend]
+    [IdentityProjector, JohnsonLindenstrauss, JohnsonLindenstraussOrAscend]
 )
 @pytest.mark.parametrize("observer", [PercentileObserver(0.95)])
 @pytest.mark.parametrize("n_features", [200, 400])

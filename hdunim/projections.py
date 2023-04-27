@@ -11,11 +11,11 @@ from hdunim.misc import assert_correct_input_size
 from hdunim.observer import Observer
 
 
-class ProjectionDim(Protocol):
+class Projector(Protocol):
     """The Projection Dim interface."""
 
     @classmethod
-    def estimate(cls, dim: int) -> int:
+    def estimate_dim(cls, dim: int) -> int:
         """Estimate the dimension over which the projection will be performed.
 
         Args:
@@ -25,11 +25,11 @@ class ProjectionDim(Protocol):
         """
 
 
-class IdentityDim(ProjectionDim):
+class IdentityProjector(Projector):
     """An identity transform that retains the initial dim."""
 
     @classmethod
-    def estimate(cls, dim: int) -> int:
+    def estimate_dim(cls, dim: int) -> int:
         """Returns the initial dimension.
 
         Args:
@@ -42,11 +42,11 @@ class IdentityDim(ProjectionDim):
         return dim
 
 
-class JohnsonLindenstraussDim(ProjectionDim):
+class JohnsonLindenstrauss(Projector):
     """An estimate of the projection dim based on the Johnson-Lindenstrauss lemma."""
 
     @classmethod
-    def estimate(cls, dim: int) -> int:
+    def estimate_dim(cls, dim: int) -> int:
         """Estimate the dimension over which the projection will be performed.
 
         Args:
@@ -65,10 +65,10 @@ class JohnsonLindenstraussDim(ProjectionDim):
         return projection_dim
 
 
-class JohnsonLindenstraussOrAscend(JohnsonLindenstraussDim):
+class JohnsonLindenstraussOrAscend(JohnsonLindenstrauss):
 
     @classmethod
-    def estimate(cls, dim: int) -> int:
+    def estimate_dim(cls, dim: int) -> int:
         """Estimate the dimension over which the projection will be performed.
 
         Args:
@@ -77,7 +77,7 @@ class JohnsonLindenstraussOrAscend(JohnsonLindenstraussDim):
             An integer indicating the projection dimension.
         """
 
-        projection_dim = super().estimate(dim)
+        projection_dim = super().estimate_dim(dim)
 
         if projection_dim == 1:
             projection_dim = np.ceil(np.exp2(dim)).astype(int)
@@ -93,8 +93,8 @@ class JohnsonLindenstraussOrAscend(JohnsonLindenstraussDim):
 class View:
     """A View wrapper class."""
 
-    projection_dim: ProjectionDim
-    # The dimension over which the projection will be performed.
+    projector: Projector
+    # A projector that yields the dimension over which the projection will be performed.
 
     observer: Observer
     # The policy on how to pick an observer.
@@ -110,11 +110,11 @@ class View:
         """
         assert_correct_input_size(arr)
 
-        if self.projection_dim == IdentityDim:
+        if self.projector == IdentityProjector:
             return arr
 
         arr_d = arr.shape[1]
-        d = self.projection_dim.estimate(arr_d)
+        d = self.projector.estimate_dim(arr_d)
         p = GaussianRandomProjection(n_components=d)
 
         return p.fit_transform(arr)
