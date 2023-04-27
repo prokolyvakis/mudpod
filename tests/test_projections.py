@@ -34,15 +34,15 @@ def test_johnson_lindenstrauss_or_ascend_dim(inp_dim: int, projection_dim: int) 
     assert projection_dim == JohnsonLindenstraussOrAscend.estimate_dim(inp_dim)
 
 @pytest.mark.parametrize(
-    "projection_dim",
+    "projector",
     [IdentityProjector, JohnsonLindenstrauss, JohnsonLindenstraussOrAscend]
 )
 @pytest.mark.parametrize("observer", [PercentileObserver(0.95)])
 @pytest.mark.parametrize("n_features", [200, 400])
-def test_view(projection_dim, observer, n_features) -> None:
+def test_view(projector, observer, n_features) -> None:
     """A functional test for the View class."""
 
-    s = View(projection_dim, observer)
+    v = View(projector, observer)
 
     x, _ = make_blobs(
         n_samples=1000,
@@ -52,6 +52,6 @@ def test_view(projection_dim, observer, n_features) -> None:
         random_state=42
     )
 
-    ds = s.distances(x)
+    ds = v.distances(x)
 
     assert not np.isnan(ds).any()
