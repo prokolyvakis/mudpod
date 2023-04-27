@@ -130,8 +130,7 @@ class Space:
         """
 
         x = self.project(arr)
-        o_i = self.observer.get(x)
-        o = x[o_i, :].T
+        o = self.observer.get(x)
         c = np.cov(x.T)
 
         return np.apply_along_axis(

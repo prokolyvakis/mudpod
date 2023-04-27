@@ -62,7 +62,9 @@ class PercentileObserver(Observer):
             ds > t
         ).ravel()
 
-        o = np.random.choice(ps, size=1, replace=False)[0]
+        o_i = np.random.choice(ps, size=1, replace=False)[0]
 
-        logger.debug(f'The observer chosen was the {ordinal(o)} datapoint.')
+        logger.debug(f'The observer chosen was the {ordinal(o_i)} datapoint.')
+
+        o = arr[o_i, :].T
         return o
