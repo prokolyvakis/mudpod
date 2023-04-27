@@ -1,7 +1,6 @@
 """Tests written for the unimodality module."""
 import pytest
 
-import numpy as np
 from sklearn.datasets import make_blobs
 
 from hdunim.misc import set_seed
@@ -60,3 +59,24 @@ def test_monte_carlo_unimodality_tester(
     mct = MonteCarloUnimodalityTester(t, workers_num, sim_num)
 
     assert not mct.test(x)
+
+
+def test_monte_carlo_unimodality_tester_assertions() -> None:
+    """Test that the assertions of the MonteCarloUnimodalityTester."""
+
+    o = PercentileObserver(0.95)
+
+    with pytest.raises(ValueError):
+        v = View(IdentityProjector, o)
+        t = UnimodalityTester(v, 0.05)
+
+        _ = MonteCarloUnimodalityTester(t, 42, 42)
+
+    v = View(JohnsonLindenstrauss, o)
+    t = UnimodalityTester(v, 0.05)
+    with pytest.raises(ValueError):
+        _ = MonteCarloUnimodalityTester(t, -1, 42)
+
+    for i in (-42, 0, 1):
+        with pytest.raises(ValueError):
+            _ = MonteCarloUnimodalityTester(t, 42, i)

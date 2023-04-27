@@ -63,14 +63,14 @@ class MonteCarloUnimodalityTester:
         if self.tester.view.projector == IdentityProjector:
             raise ValueError('Cannot perform Monte Carlo simulations '
                              'without random projections!')
-        if self.sim_num == 1:
+        if self.sim_num <= 1:
             raise ValueError("The simulations' number must be greater than 1!")
 
     def test(self, x: np.ndarray) -> bool:
         """A test that assesses the \alpha-unimodality of a dataset using a random view.
 
         Args:
-        x: α 2D numpy array with the first dimension being the number of different
+        x: a 2D numpy array with the first dimension being the number of different
                 datapoints and the second being the features' size.
         Returns:
             A boolean indicating whether the data follow a \alpha-unimodal distribution.
