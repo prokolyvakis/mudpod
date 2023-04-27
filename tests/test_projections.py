@@ -8,8 +8,8 @@ from hdunim.misc import set_seed
 from hdunim.projections import JohnsonLindenstraussDim
 from hdunim.projections import JohnsonLindenstraussOrAscend
 from hdunim.projections import IdentityDim
-from hdunim.projections import Space
 from hdunim.observer import PercentileObserver
+from hdunim.projections import View
 
 set_seed(42)
 
@@ -39,10 +39,10 @@ def test_johnson_lindenstrauss_or_ascend_dim(inp_dim: int, projection_dim: int) 
 )
 @pytest.mark.parametrize("observer", [PercentileObserver(0.95)])
 @pytest.mark.parametrize("n_features", [200, 400])
-def test_space(projection_dim, observer, n_features) -> None:
-    """A functional test for the Space class."""
+def test_view(projection_dim, observer, n_features) -> None:
+    """A functional test for the View class."""
 
-    s = Space(projection_dim, observer)
+    s = View(projection_dim, observer)
 
     x, _ = make_blobs(
         n_samples=1000,

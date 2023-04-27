@@ -90,8 +90,8 @@ class JohnsonLindenstraussOrAscend(JohnsonLindenstraussDim):
 
 
 @dataclass
-class Space:
-    """A Space wrapper class."""
+class View:
+    """A View wrapper class."""
 
     projection_dim: ProjectionDim
     # The dimension over which the projection will be performed.
