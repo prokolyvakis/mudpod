@@ -2,6 +2,7 @@
 import random
 
 import numpy as np
+import torch
 
 
 def assert_correct_input_size(arr: np.ndarray) -> None:
@@ -32,5 +33,6 @@ def set_seed(s: int):
     Args:
         s: the random seed to be set
     """
-    np.random.seed(s)
     random.seed(s)
+    np.random.seed(s)
+    torch.manual_seed(s)
