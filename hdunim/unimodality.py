@@ -49,13 +49,13 @@ class MonteCarloUnimodalityTester:
     """
 
     tester: UnimodalityTester
-    # A unimodality tester
-
-    workers_num: int
-    # The number of workers
+    # A unimodality tester.
 
     sim_num: int
     # The number of Monte Carlo simulations.
+
+    workers_num: int
+    # The number of workers.
 
     def __post_init__(self):
         if self.workers_num < 0:
@@ -89,4 +89,4 @@ class MonteCarloUnimodalityTester:
 
         pv = (1. * np.count_nonzero(tests)) / self.sim_num
 
-        return pv
+        return pv > (1. - self.tester.pval)

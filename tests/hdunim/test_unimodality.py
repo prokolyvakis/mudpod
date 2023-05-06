@@ -56,7 +56,7 @@ def test_monte_carlo_unimodality_tester(
 
     t = UnimodalityTester(v, 0.05)
 
-    mct = MonteCarloUnimodalityTester(t, workers_num, sim_num)
+    mct = MonteCarloUnimodalityTester(t, sim_num, workers_num)
 
     assert not mct.test(x)
 
@@ -79,4 +79,4 @@ def test_monte_carlo_unimodality_tester_assertions() -> None:
 
     for i in (-42, 0, 1):
         with pytest.raises(ValueError):
-            _ = MonteCarloUnimodalityTester(t, 42, i)
+            _ = MonteCarloUnimodalityTester(t, i, 42)
