@@ -35,7 +35,7 @@ class DipMeans(KMeans):
     boot_pval: bool = False
     # A boolean flag indicating whether to boostrap the dip value.
 
-    n_clusters: int = 8
+    n_clusters: int = 1
 
     init: str = 'k-means++'
 
@@ -68,7 +68,7 @@ class DipMeans(KMeans):
 
     def __post_init__(self):
         super().__init__(
-            self.n_clusters,
+            n_clusters=1,
             init=self.init,
             n_init=self.n_init,
             max_iter=self.max_iter,
