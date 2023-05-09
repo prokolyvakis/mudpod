@@ -135,7 +135,6 @@ class DipMeans(KMeans):
 
         self.n_clusters = 2
         super().fit(X, y, sample_weight)
-        self.init = self.cluster_centers_
 
         while True:
             logger.debug(f'The number of clusters has been increased! '
