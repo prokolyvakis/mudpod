@@ -22,6 +22,7 @@ dependencies = [
     "setuptools-rust>=1.6.0",
     "datasets>=2.8.0",
     "pillow>=9.5.0",
+    "plotly>=5.14.1",
 ]
 requires-python = ">=3.9"
 readme = "README.md"

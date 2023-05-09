@@ -1,7 +1,6 @@
 """Clustering experiments with real datasets."""
 from loguru import logger
 import numpy as np
-
 from sklearn.metrics import adjusted_mutual_info_score
 from sklearn.metrics import homogeneity_score
 from sklearn.metrics import normalized_mutual_info_score

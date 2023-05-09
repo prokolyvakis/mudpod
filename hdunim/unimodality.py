@@ -66,14 +66,14 @@ class MonteCarloUnimodalityTester:
         if self.sim_num <= 1:
             raise ValueError("The simulations' number must be greater than 1!")
 
-    def test(self, x: np.ndarray) -> bool:
-        """A test that assesses the \alpha-unimodality of a dataset using a random view.
+    def estimate(self, x: np.ndarray) -> float:
+        """Estimate the ecdf of the Monte Carlo \alpha-unimodality statistical test.
 
         Args:
-        x: a 2D numpy array with the first dimension being the number of different
+            x: a 2D numpy array with the first dimension being the number of different
                 datapoints and the second being the features' size.
         Returns:
-            A boolean indicating whether the data follow a \alpha-unimodal distribution.
+            The estimated probability.
         """
         def generator(n):
             i = 0
@@ -89,4 +89,17 @@ class MonteCarloUnimodalityTester:
 
         pv = (1. * np.count_nonzero(tests)) / self.sim_num
 
-        return pv > (1. - self.tester.pval)
+        return 1. - pv
+
+    def test(self, x: np.ndarray) -> bool:
+        """A test that assesses the \alpha-unimodality of a dataset using a random view.
+
+        Args:
+            x: a 2D numpy array with the first dimension being the number of different
+                datapoints and the second being the features' size.
+        Returns:
+            A boolean indicating whether the data follow a \alpha-unimodal distribution.
+        """
+        pv = self.estimate(x)
+
+        return pv < self.tester.pval

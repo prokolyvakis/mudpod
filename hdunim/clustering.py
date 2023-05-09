@@ -5,6 +5,7 @@ from numbers import Integral
 from numbers import Real
 from typing import ClassVar
 from typing import Optional
+from typing import Union
 
 from loguru import logger
 import numpy as np
@@ -37,7 +38,7 @@ class DipMeans(KMeans):
 
     n_clusters: int = 1
 
-    init: str = 'k-means++'
+    init: Union[str, np.ndarray] = 'k-means++'
 
     n_init: str = 'warn'
 
@@ -93,6 +94,17 @@ class DipMeans(KMeans):
         """
         return True if x.shape[0] < self._min_input_size else self.mc_test.test(x)
 
+    def _estimate_unimodality(self, x: np.ndarray) -> float:
+        """Estimate the ecdf of the Monte Carlo \alpha-unimodality statistical test.
+
+        Args:
+            x: a 2D numpy array with the first dimension being the number of different
+                datapoints and the second being the features' size.
+        Returns:
+            The estimated probability.
+        """
+        return 0. if x.shape[0] < self._min_input_size else self.mc_test.estimate(x)
+
     def fit(self, X, y=None, sample_weight=None):
         """Compute dip-means clustering.
 
@@ -115,20 +127,55 @@ class DipMeans(KMeans):
                 Fitted estimator.
         """
         self.n_clusters = 1
+        self.init = 'k-means++'
         if self._is_unimodal(X):
             logger.debug('The initial data were unimodal!')
-            return super().fit(X, y, sample_weight)
+            # ToDO: fill in the missing attributes!
+            return self
+
+        self.n_clusters = 2
+        super().fit(X, y, sample_weight)
+        self.init = self.cluster_centers_
 
         while True:
-            self.n_clusters += 1
             logger.debug(f'The number of clusters has been increased! '
                          f'The current estimate is: {self.n_clusters}')
 
-            clusters = super().fit(X, y, sample_weight).predict(X, sample_weight)
-            cond = [self._is_unimodal(X[clusters == i]) for i in range(self.n_clusters)]
+            labels = self.labels_.copy()
 
-            if np.all(cond):
+            ests = np.array([
+                self._estimate_unimodality(X[labels == i])
+                for i in range(self.n_clusters)
+            ])
+
+            if np.all(ests < self.mc_test.tester.pval):
                 logger.info(f"The final number of clusters is: {self.n_clusters}.")
                 break
+
+            cluster_centers = self.cluster_centers_.copy()
+            n_clusters = self.n_clusters
+            i_max = np.argmax(ests)
+            logger.debug(f'The maximum estimate is: {ests[i_max]}.')
+            l_max = np.max(labels)
+
+            self.n_clusters = 2
+            self.init = np.vstack((cluster_centers[i_max], cluster_centers[i_max]))
+            super().fit(
+                X[labels == i_max],
+                y,
+                None if sample_weight is None else sample_weight[labels == i_max]
+            )
+
+            self.cluster_centers_ = np.vstack((
+                cluster_centers[:i_max],
+                self.cluster_centers_,
+                cluster_centers[i_max+1:]
+            ))
+
+            self.labels_[self.labels_ == 0] = i_max
+            self.labels_[self.labels_ == 1] = l_max + 1
+            labels[labels == i_max] = self.labels_.copy()
+            self.labels_ = labels
+            self.n_clusters = n_clusters + 1
 
         return self
