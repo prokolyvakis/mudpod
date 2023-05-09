@@ -11,7 +11,7 @@ from hdunim.observer import PercentileObserver
 from hdunim.projections import View
 from hdunim.misc import set_seed
 
-SEED = 120
+SEED = 42
 
 set_seed(SEED)
 
@@ -21,9 +21,9 @@ if __name__ == "__main__":
     x = np.array(mat['X'])
     y = np.array(mat['C']).ravel()
 
-    v = View(JohnsonLindenstrauss, PercentileObserver(0.99))
+    v = View(JohnsonLindenstrauss, PercentileObserver(0.9999))
 
-    dm = DipMeans(view=v, pval=0.001, sim_num=1000, workers_num=10)
+    dm = DipMeans(view=v, pval=0.001, sim_num=100, workers_num=10, random_state=SEED)
 
     clusters = dm.fit(x).predict(x)
 

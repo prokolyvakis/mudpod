@@ -5,7 +5,9 @@ from sklearn.metrics import adjusted_mutual_info_score
 from sklearn.metrics import homogeneity_score
 from sklearn.metrics import normalized_mutual_info_score
 from sklearn.metrics import silhouette_score
+from umap import UMAP
 
+from experiments.common import plot_clustered_data
 from experiments.real.utils import DataHandler
 from experiments.real.utils import SplitMode
 from hdunim.clustering import DipMeans
@@ -14,7 +16,7 @@ from hdunim.observer import PercentileObserver
 from hdunim.projections import View
 from hdunim.misc import set_seed
 
-SEED = 120
+SEED = 42
 
 set_seed(SEED)
 
@@ -57,8 +59,14 @@ if __name__ == "__main__":
 
     v = View(JohnsonLindenstrauss, PercentileObserver(0.99))
 
-    dm = DipMeans(view=v, pval=0.05, sim_num=10, workers_num=10)
+    dm = DipMeans(view=v, pval=0.05, sim_num=10, workers_num=10, random_state=SEED)
 
     clusters = dm.fit(x).predict(x)
 
     logger.info(f'The NMI score is {normalized_mutual_info_score(y, clusters)}')
+
+    reducer = UMAP(random_state=SEED)
+    reducer.fit(x)
+    embeddings = reducer.transform(x)
+
+    plot_clustered_data(embeddings, clusters)
