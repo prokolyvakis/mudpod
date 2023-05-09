@@ -65,7 +65,7 @@ class JohnsonLindenstrauss(Projector):
         return projection_dim
 
 
-class JohnsonLindenstraussOrAscend(JohnsonLindenstrauss):
+class ExponentiallyDescendOrAscend(JohnsonLindenstrauss):
 
     @classmethod
     def estimate_dim(cls, dim: int) -> int:

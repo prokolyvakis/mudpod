@@ -6,7 +6,7 @@ from sklearn.datasets import make_blobs
 
 from hdunim.misc import set_seed
 from hdunim.projections import JohnsonLindenstrauss
-from hdunim.projections import JohnsonLindenstraussOrAscend
+from hdunim.projections import ExponentiallyDescendOrAscend
 from hdunim.projections import IdentityProjector
 from hdunim.observer import PercentileObserver
 from hdunim.projections import View
@@ -29,13 +29,13 @@ def test_johnson_lindenstrauss_dim(input_dim, projection_dim) -> None:
 
 @pytest.mark.parametrize("inp_dim,projection_dim", [(32, 5), (64, 6), (2, 4), (3, 8)])
 def test_johnson_lindenstrauss_or_ascend_dim(inp_dim: int, projection_dim: int) -> None:
-    """Test that JohnsonLindenstrauss works smoothly."""
+    """Test that ExponentiallyDescendOrAscend works smoothly."""
 
-    assert projection_dim == JohnsonLindenstraussOrAscend.estimate_dim(inp_dim)
+    assert projection_dim == ExponentiallyDescendOrAscend.estimate_dim(inp_dim)
 
 @pytest.mark.parametrize(
     "projector",
-    [IdentityProjector, JohnsonLindenstrauss, JohnsonLindenstraussOrAscend]
+    [IdentityProjector, JohnsonLindenstrauss, ExponentiallyDescendOrAscend]
 )
 @pytest.mark.parametrize("observer", [PercentileObserver(0.95)])
 @pytest.mark.parametrize("n_features", [200, 400])
