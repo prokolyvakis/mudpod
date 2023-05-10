@@ -129,21 +129,19 @@ class DipMeans(KMeans):
         self.n_clusters = 1
         self.init = 'k-means++'
         if self._is_unimodal(X):
-            logger.debug('The initial data were unimodal!')
-            # ToDO: fill in the missing attributes!
+            logger.debug('The initial data were unimodal.')
+            super().fit(X, y, sample_weight)
             return self
 
-        self.n_clusters = 2
-        super().fit(X, y, sample_weight)
-
         while True:
+            self.n_clusters += 1
             logger.debug(f'The number of clusters has been increased! '
                          f'The current estimate is: {self.n_clusters}')
 
-            labels = self.labels_.copy()
+            super().fit(X, y, sample_weight)
 
             ests = np.array([
-                self._estimate_unimodality(X[labels == i])
+                self._estimate_unimodality(X[self.labels_ == i])
                 for i in range(self.n_clusters)
             ])
 
@@ -151,30 +149,16 @@ class DipMeans(KMeans):
                 logger.info(f"The final number of clusters is: {self.n_clusters}.")
                 break
 
-            cluster_centers = self.cluster_centers_.copy()
-            n_clusters = self.n_clusters
             i_max = np.argmax(ests)
-            logger.debug(f'The maximum estimate is: {ests[i_max]}.')
-            l_max = np.max(labels)
+            logger.debug(f'The ests are: {ests} and the i_max is: {i_max}.')
+            std = np.std(X[self.labels_ == i_max], axis=0)
+            m = np.mean(X[self.labels_ == i_max], axis=0)
 
-            self.n_clusters = 2
-            self.init = np.vstack((cluster_centers[i_max], cluster_centers[i_max]))
-            super().fit(
-                X[labels == i_max],
-                y,
-                None if sample_weight is None else sample_weight[labels == i_max]
-            )
-
-            self.cluster_centers_ = np.vstack((
-                cluster_centers[:i_max],
-                self.cluster_centers_,
-                cluster_centers[i_max+1:]
+            self.init = np.vstack((
+                self.cluster_centers_[:i_max],
+                m - std,
+                m + std,
+                self.cluster_centers_[i_max+1:]
             ))
-
-            self.labels_[self.labels_ == 0] = i_max
-            self.labels_[self.labels_ == 1] = l_max + 1
-            labels[labels == i_max] = self.labels_.copy()
-            self.labels_ = labels
-            self.n_clusters = n_clusters + 1
 
         return self
