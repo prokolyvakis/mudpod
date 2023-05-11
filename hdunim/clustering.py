@@ -9,6 +9,7 @@ from typing import Union
 
 from loguru import logger
 import numpy as np
+import numpy.ma as ma
 from sklearn.cluster import KMeans
 from sklearn.utils._param_validation import Interval
 
@@ -83,17 +84,6 @@ class DipMeans(KMeans):
         t = UnimodalityTester(self.view, self.pval, self.boot_pval)
         self.mc_test = MonteCarloUnimodalityTester(t, self.sim_num, self.workers_num)
 
-    def _is_unimodal(self, x: np.ndarray) -> bool:
-        """Method that checks whether the input is unimodal.
-
-        Args:
-            x: a 2D numpy array with the first dimension being the number of different
-                datapoints and the second being the features' size.
-        Returns:
-            A boolean value indicating whether the input is unimodal.
-        """
-        return True if x.shape[0] < self._min_input_size else self.mc_test.test(x)
-
     def _estimate_unimodality(self, x: np.ndarray) -> float:
         """Estimate the ecdf of the Monte Carlo \alpha-unimodality statistical test.
 
@@ -128,7 +118,8 @@ class DipMeans(KMeans):
         """
         self.n_clusters = 1
         self.init = 'k-means++'
-        if self._is_unimodal(X):
+
+        if self._estimate_unimodality(X) < self.mc_test.tester.pval:
             logger.debug('The initial data were unimodal.')
             super().fit(X, y, sample_weight)
             return self
@@ -145,11 +136,12 @@ class DipMeans(KMeans):
                 for i in range(self.n_clusters)
             ])
 
-            if np.all(ests < self.mc_test.tester.pval):
+            masked_ests = ma.masked_array(ests, ests < self.mc_test.tester.pval)
+            if masked_ests.mask.all():
                 logger.info(f"The final number of clusters is: {self.n_clusters}.")
                 break
 
-            i_max = np.argmax(ests)
+            i_max = ma.argmax(masked_ests)
             logger.debug(f'The ests are: {ests} and the i_max is: {i_max}.')
             std = np.std(X[self.labels_ == i_max], axis=0)
             m = np.mean(X[self.labels_ == i_max], axis=0)
