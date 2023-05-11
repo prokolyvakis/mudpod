@@ -2,12 +2,10 @@
 from dataclasses import dataclass
 from typing import Protocol
 
-from loguru import logger
 import numpy as np
 from scipy.spatial.distance import mahalanobis
 
 from hdunim.misc import assert_correct_input_size
-from hdunim.misc import ordinal
 
 
 class Observer(Protocol):
@@ -29,6 +27,7 @@ class PercentileObserver(Observer):
     """Sample uniformly an observer from a certain percentile."""
 
     percentile: float
+
     # The percentile to be sampled over.
 
     def __post_init__(self):
@@ -56,15 +55,33 @@ class PercentileObserver(Observer):
             int(100 * self.percentile)
         )
 
-        logger.debug(f'The percentile threshold is {t}.')
-
         ps = np.argwhere(
             ds > t
         ).ravel()
 
         o_i = np.random.choice(ps, size=1, replace=False)[0]
 
-        logger.debug(f'The observer chosen was the {ordinal(o_i)} datapoint.')
+        o = arr[o_i, :].T
+        return o
+
+
+@dataclass
+class RandomObserver(Observer):
+    """Sample uniformly an observer from the dataset."""
+
+    def get(self, arr: np.ndarray) -> np.ndarray:
+        """Get the observer.
+        Args:
+            arr: A 2D numpy array with the first dimension being the number of different
+                datapoints and the second being the features' size.
+        Returns:
+            An observer with the same features' size.
+        """
+        assert_correct_input_size(arr)
+
+        n = arr.shape[0]
+
+        o_i = np.random.choice(n, size=1, replace=False)[0]
 
         o = arr[o_i, :].T
         return o
