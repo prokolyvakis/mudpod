@@ -6,7 +6,6 @@ from loguru import logger
 from mpire import WorkerPool
 import numpy as np
 
-from hdunim.projections import IdentityProjector
 from hdunim.projections import View
 
 
@@ -60,9 +59,6 @@ class MonteCarloUnimodalityTester:
     def __post_init__(self):
         if self.workers_num < 0:
             raise ValueError('The number of works must be non-negative!')
-        if self.tester.view.projector == IdentityProjector:
-            raise ValueError('Cannot perform Monte Carlo simulations '
-                             'without random projections!')
         if self.sim_num <= 1:
             raise ValueError("The simulations' number must be greater than 1!")
 

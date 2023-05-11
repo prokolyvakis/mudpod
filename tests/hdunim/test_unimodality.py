@@ -66,12 +66,6 @@ def test_monte_carlo_unimodality_tester_assertions() -> None:
 
     o = PercentileObserver(0.95)
 
-    with pytest.raises(ValueError):
-        v = View(IdentityProjector, o)
-        t = UnimodalityTester(v, 0.05)
-
-        _ = MonteCarloUnimodalityTester(t, 42, 42)
-
     v = View(JohnsonLindenstrauss, o)
     t = UnimodalityTester(v, 0.05)
     with pytest.raises(ValueError):
