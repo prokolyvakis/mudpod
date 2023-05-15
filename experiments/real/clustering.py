@@ -59,9 +59,9 @@ if __name__ == "__main__":
 
     v = View(JohnsonLindenstrauss, PercentileObserver(0.99))
 
-    dm = DipMeans(view=v, pval=0.05, sim_num=10, workers_num=10, random_state=SEED)
+    dm = DipMeans(view=v, pval=0.05, sim_num=100, workers_num=10, random_state=SEED)
 
-    clusters = dm.fit(x).predict(x)
+    clusters = dm.fit(x).labels_
 
     logger.info(f'The NMI score is {normalized_mutual_info_score(y, clusters)}')
 
