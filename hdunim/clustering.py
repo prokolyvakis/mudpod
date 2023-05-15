@@ -14,8 +14,8 @@ from sklearn.cluster import KMeans
 from sklearn.utils._param_validation import Interval
 
 from hdunim.projections import View
-from hdunim.unimodality import UnimodalityTester
-from hdunim.unimodality import MonteCarloUnimodalityTester
+from hdunim.unimodality import UnimodalityTest
+from hdunim.unimodality import MonteCarloUnimodalityTest
 
 
 @dataclass
@@ -55,7 +55,7 @@ class DipMeans(KMeans):
 
     algorithm: str = 'lloyd'
 
-    mc_test: MonteCarloUnimodalityTester = field(init=False, repr=False)
+    mc_test: MonteCarloUnimodalityTest = field(init=False, repr=False)
 
     _parameter_constraints: dict = field(default_factory=lambda: {
             **KMeans._parameter_constraints,
@@ -81,8 +81,8 @@ class DipMeans(KMeans):
             algorithm=self.algorithm
         )
 
-        t = UnimodalityTester(self.view, self.pval, self.boot_pval)
-        self.mc_test = MonteCarloUnimodalityTester(t, self.sim_num, self.workers_num)
+        t = UnimodalityTest(self.view, self.pval, self.boot_pval)
+        self.mc_test = MonteCarloUnimodalityTest(t, self.sim_num, self.workers_num)
 
     def _estimate_unimodality(self, x: np.ndarray) -> float:
         """Estimate the ecdf of the Monte Carlo \alpha-unimodality statistical test.

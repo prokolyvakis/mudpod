@@ -10,7 +10,7 @@ from hdunim.projections import View
 
 
 @dataclass
-class UnimodalityTester:
+class UnimodalityTest:
     """A wrapper class for checking the unimodality of a dataset using views."""
 
     view: View
@@ -42,12 +42,12 @@ class UnimodalityTester:
 
 
 @dataclass
-class MonteCarloUnimodalityTester:
+class MonteCarloUnimodalityTest:
     """
     A wrapper class for checking the unimodality of a dataset using Monte Carlo views.
     """
 
-    tester: UnimodalityTester
+    tester: UnimodalityTest
     # A unimodality tester.
 
     sim_num: int
