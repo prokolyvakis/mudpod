@@ -38,11 +38,12 @@ def test_johnson_lindenstrauss_or_ascend_dim(inp_dim: int, projection_dim: int) 
     [IdentityProjector, JohnsonLindenstrauss, ExponentiallyDescendOrAscend]
 )
 @pytest.mark.parametrize("observer", [PercentileObserver(0.95)])
+@pytest.mark.parametrize("dtype", sorted(['euclidean', 'mahalanobis']))
 @pytest.mark.parametrize("n_features", [200, 400])
-def test_view(projector, observer, n_features) -> None:
+def test_view(projector, observer, dtype, n_features) -> None:
     """A functional test for the View class."""
 
-    v = View(projector, observer)
+    v = View(projector, observer, dtype)
 
     x, _ = make_blobs(
         n_samples=1000,

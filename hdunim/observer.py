@@ -1,11 +1,13 @@
 """Observers definition."""
 from dataclasses import dataclass
+from dataclasses import field
+from dataclasses import InitVar
 from typing import Protocol
 
 import numpy as np
-from scipy.spatial.distance import mahalanobis
 
 from hdunim.misc import assert_correct_input_size
+from hdunim.misc import Distance
 
 
 class Observer(Protocol):
@@ -27,11 +29,17 @@ class PercentileObserver(Observer):
     """Sample uniformly an observer from a certain percentile."""
 
     percentile: float
-
     # The percentile to be sampled over.
 
-    def __post_init__(self):
+    dtype: InitVar[str] = 'mahalanobis'
+    # The distance type.
+
+    distance: Distance = field(init=False, repr=True)
+    # The distance.
+
+    def __post_init__(self, dtype: str):
         assert 0 < self.percentile < 1, 'The percentile should lie in (0, 1) interval.'
+        self.distance = Distance(dtype=dtype)
 
     def get(self, arr: np.ndarray) -> np.ndarray:
         """Get the observer.
@@ -43,12 +51,8 @@ class PercentileObserver(Observer):
         """
         assert_correct_input_size(arr)
         m = np.mean(arr, axis=0)
-        c = np.cov(arr.T)
 
-        ds = np.apply_along_axis(
-            lambda a: mahalanobis(a, m, c),
-            0, arr.T
-        )
+        ds = self.distance.compute(arr, m)
 
         t = np.percentile(
             ds,

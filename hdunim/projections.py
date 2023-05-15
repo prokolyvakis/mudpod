@@ -1,13 +1,15 @@
 """Projections defintion."""
 from dataclasses import dataclass
+from dataclasses import field
+from dataclasses import InitVar
 from typing import Protocol
 
 from loguru import logger
 import numpy as np
 from sklearn.random_projection import GaussianRandomProjection
-from scipy.spatial.distance import mahalanobis
 
 from hdunim.misc import assert_correct_input_size
+from hdunim.misc import Distance
 from hdunim.observer import Observer
 
 
@@ -99,6 +101,15 @@ class View:
     observer: Observer
     # The policy on how to pick an observer.
 
+    dtype: InitVar[str] = 'mahalanobis'
+    # The distance type.
+
+    distance: Distance = field(init=False, repr=True)
+    # The distance.
+
+    def __post_init__(self, dtype: str):
+        self.distance = Distance(dtype=dtype)
+
     def project(self, arr: np.ndarray) -> np.ndarray:
         """Get the projected data.
 
@@ -131,10 +142,5 @@ class View:
 
         x = self.project(arr)
         o = self.observer.get(x)
-        c = np.cov(x.T)
 
-        return np.apply_along_axis(
-            lambda a: mahalanobis(a, o, c),
-            0,
-            x.T
-        )
+        return self.distance.compute(x, o)

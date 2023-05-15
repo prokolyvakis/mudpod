@@ -5,7 +5,6 @@ from sklearn.datasets import make_blobs
 
 from hdunim.misc import set_seed
 from hdunim.projections import JohnsonLindenstrauss
-from hdunim.projections import IdentityProjector
 from hdunim.observer import PercentileObserver
 from hdunim.projections import View
 from hdunim.unimodality import UnimodalityTester
