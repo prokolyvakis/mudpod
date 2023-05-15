@@ -27,16 +27,16 @@ rules:
     -   2
     -   always
     -   -   chore
-    -   core
-    -   ci
-    -   feat
-    -   fix
-    -   docs
-    -   style
-    -   refactor
-    -   perf
-    -   test
-    -   revert
+        -   core
+        -   ci
+        -   feat
+        -   fix
+        -   docs
+        -   style
+        -   refactor
+        -   perf
+        -   test
+        -   revert
 
 help: |
   **Possible types**:
