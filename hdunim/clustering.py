@@ -41,13 +41,13 @@ class DipMeans(KMeans):
 
     init: Union[str, np.ndarray] = 'k-means++'
 
-    n_init: str = 'warn'
+    n_init: str = 'auto'
 
     max_iter: int = 300
 
     tol: float = 1e-4
 
-    verbose: int = 8
+    verbose: int = 0
 
     random_state: Optional[int] = None
 

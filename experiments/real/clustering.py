@@ -1,4 +1,6 @@
 """Clustering experiments with real datasets."""
+import sys
+
 from loguru import logger
 import numpy as np
 from sklearn.metrics import adjusted_mutual_info_score
@@ -21,11 +23,9 @@ SEED = 42
 set_seed(SEED)
 
 
-# logger.remove()
-# logger.add(
-#     sys.stderr,
-#     level="INFO"
-# )
+logger.remove()
+# add a new handler with level set to INFO
+logger.add(sys.stderr, level="INFO")
 
 
 if __name__ == "__main__":
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     v = View(JohnsonLindenstrauss, PercentileObserver(0.99))
 
-    dm = DipMeans(view=v, pval=0.05, sim_num=100, workers_num=10, random_state=SEED)
+    dm = DipMeans(view=v, pval=0.001, sim_num=100, workers_num=10, random_state=SEED)
 
     clusters = dm.fit(x).labels_
 

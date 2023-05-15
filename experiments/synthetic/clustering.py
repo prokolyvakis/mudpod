@@ -1,10 +1,11 @@
 """Clustering experiments with synthetic datasets."""
+import sys
+
 from loguru import logger
-import numpy as np
-import scipy.io as sio
 from sklearn.metrics import normalized_mutual_info_score
 
 from experiments.common import plot_clustered_data
+from experiments.synthetic.misc import load
 from hdunim.clustering import DipMeans
 from hdunim.projections import IdentityProjector
 from hdunim.projections import JohnsonLindenstrauss
@@ -17,11 +18,14 @@ SEED = 128
 
 set_seed(SEED)
 
+logger.remove()
+# add a new handler with level set to INFO
+logger.add(sys.stderr, level="INFO")
+
 
 if __name__ == "__main__":
-    mat = sio.loadmat('synthetic.mat')
-    x = np.array(mat['X'])
-    y = np.array(mat['C']).ravel()
+    fname = 'xclara.arff'
+    x, y = load(fname)
     # mask = np.isin(y, [5, 8])
     # x = x[mask]
     # y = y[mask]

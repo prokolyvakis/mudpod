@@ -1,4 +1,6 @@
 """Unimodality hypothesis testing experiments with synthetic datasets.s."""
+import sys
+
 from loguru import logger
 from sklearn.datasets import make_blobs
 from sklearn.datasets import make_circles
@@ -19,6 +21,10 @@ from hdunim.unimodality import MonteCarloUnimodalityTest
 SEED = 42
 
 set_seed(SEED)
+
+logger.remove()
+# add a new handler with level set to INFO
+logger.add(sys.stderr, level="INFO")
 
 
 if __name__ == "__main__":
