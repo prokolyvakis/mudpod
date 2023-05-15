@@ -18,7 +18,7 @@ from hdunim.observer import PercentileObserver
 from hdunim.projections import View
 from hdunim.misc import set_seed
 
-SEED = 42
+SEED = 120
 
 set_seed(SEED)
 
@@ -45,21 +45,10 @@ if __name__ == "__main__":
     )
 
     x, y = data_handler.get(SplitMode.TEST)
-    # ms = group_data_points(x, y)
-    # i, j = 0, 1
-    # x = np.concatenate([ms[i], ms[j]], axis=0)
-    # logger.info(
-    #     f'The 1st modality has {ms[i].shape[0]} samples, while '
-    #     f'the 2d modality has {ms[j].shape[0]} samples!'
-    # )
-    # y = np.array(
-    #     ([0.] * ms[i].shape[0]) +
-    #     ([1.] * ms[j].shape[0])
-    # )
 
     v = View(JohnsonLindenstrauss, PercentileObserver(0.99))
 
-    dm = DipMeans(view=v, pval=0.001, sim_num=100, workers_num=10, random_state=SEED)
+    dm = DipMeans(view=v, pval=0.05, sim_num=100, workers_num=10, random_state=SEED)
 
     clusters = dm.fit(x).labels_
 

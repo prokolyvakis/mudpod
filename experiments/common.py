@@ -44,3 +44,20 @@ def plot_clustered_data(data: np.ndarray, labels: np.ndarray) -> None:
     )
 
     fig.show()
+
+
+def group_data_points(data: np.ndarray, clusters: np.ndarray) -> list[np.ndarray]:
+    """Group data points into disjoint sets based on the cluster index they belong to.
+
+    Args:
+        data: a 2D numpy array with the first dimension being the number of different
+                datapoints and the second being the features' size.
+        clusters: a 1D numpy array indicating the cluster indices.
+    Returns:
+        A list of 1D numpy arrays where each list element corresponds to the datapoints
+            belong to the same cluster.
+    """
+    m = np.hstack((data, clusters[:, None]))
+    m = m[m[:, -1].argsort()]
+    m = np.split(m[:, :-1], np.unique(m[:, -1], return_index=True)[1][1:])
+    return m

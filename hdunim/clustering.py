@@ -41,7 +41,7 @@ class DipMeans(KMeans):
 
     init: Union[str, np.ndarray] = 'k-means++'
 
-    n_init: str = 'auto'
+    n_init: str = 'warn'
 
     max_iter: int = 300
 
