@@ -60,7 +60,7 @@ class PercentileObserver(Observer):
         )
 
         ps = np.argwhere(
-            ds > t
+            ds >= t
         ).ravel()
 
         o_i = np.random.choice(ps, size=1, replace=False)[0]
