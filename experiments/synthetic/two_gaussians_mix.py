@@ -1,8 +1,8 @@
-"""Unimodality hypothesis testing experiments with synthetic datasets.
+"""Unimodality hypothesis testing experiments with a mixture of 2D gaussians.
 
 Usage:
-  unimodality.py <d> <pj> <pv> <sims> [--samples=<s> --noise=<n> --seed=<sd>]
-  unimodality.py -h | --help
+  two_gaussians_mix.py <pj> <pv> <sims> [--samples=<s> --noise=<n> --seed=<sd>]
+  two_gaussians_mix.py -h | --help
 
 Options:
   -h --help         Show this screen.
@@ -11,18 +11,12 @@ Options:
   --seed=<sd>       The seed [default: 42].
 """
 import sys
-from typing import Callable
 
 from docopt import docopt
 from loguru import logger
-from sklearn.datasets import make_blobs
-from sklearn.datasets import make_circles
-from sklearn.datasets import make_moons
-from sklearn.datasets import make_swiss_roll
-from sklearn.datasets import load_digits
-from sklearn.datasets import load_iris
 
 from experiments.common import plot_clustered_data
+from experiments.synthetic.misc import TwoDimGaussianSumGenerator
 from hdunim.misc import set_seed
 from hdunim.projections import IdentityProjector
 from hdunim.projections import JohnsonLindenstrauss
@@ -31,22 +25,10 @@ from hdunim.projections import View
 from hdunim.unimodality import UnimodalityTest
 from hdunim.unimodality import MonteCarloUnimodalityTest
 
+
 logger.remove()
 # add a new handler with level set to INFO
 logger.add(sys.stderr, level="INFO")
-
-
-def get_dataset(name: str) -> Callable:
-    if name == 'circles':
-        return make_circles
-    elif name == 'moons':
-        return make_moons
-    elif name == 'swiss_roll':
-        return make_swiss_roll
-    else:
-        msg = f'Unknown dataset name: {name}'
-        logger.error(msg)
-        raise ValueError(msg)
 
 
 if __name__ == "__main__":
@@ -65,16 +47,22 @@ if __name__ == "__main__":
         workers_num=10
     )
 
-    data_func = get_dataset(str(arguments['<d>']))
     n_samples = int(arguments['--samples'])
-    noise = float(arguments['--noise'])
-    x, y = data_func(n_samples=n_samples, noise=noise, random_state=SEED)
+    std = float(arguments['--noise'])
+    g = TwoDimGaussianSumGenerator(
+      n=n_samples,
+      cluster_std=std, 
+      random_state=SEED
+    )
 
+    tr = 'unimodal' if mct.test(g.x) else 'bimodal'
+    logger.info(f'The statistical test says {tr} and the data were {g.t}!')
     msg = dict(arguments)
-    msg['result'] = 'unimodal' if mct.test(x) else 'multimodal'
+    msg['groundtruth'] = g.t
+    msg['result'] = tr
     logger.info(
         'The inputs and the output of the experiments is: '
         f'{msg}'
     )
 
-    plot_clustered_data(x, y)
+    plot_clustered_data(g.x, g.y)
