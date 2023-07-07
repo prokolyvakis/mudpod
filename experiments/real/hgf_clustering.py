@@ -1,4 +1,6 @@
-"""Clustering experiments with real datasets."""
+"""Clustering experiments with real datasets with representations obtained from
+   pre-trained hugging face models.
+"""
 import sys
 
 from loguru import logger
@@ -32,8 +34,7 @@ logger.add(sys.stderr, level="INFO")
 
 if __name__ == "__main__":
     max_samples = 1000
-    do_resize = True
-    image_key, label_key, is_rgb = "image", "label", False
+    image_key, label_key = "image", "label"
     dataset_name = "fashion_mnist"
     model_name = "abhishek/autotrain_fashion_mnist_vit_base"
 
