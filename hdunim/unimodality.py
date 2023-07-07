@@ -29,7 +29,7 @@ class UnimodalityTest:
         """A test that assesses the \alpha-unimodality of a dataset using a random view.
 
         Args:
-        x: α 2D numpy array with the first dimension being the number of different
+        x: a 2D numpy array with the first dimension being the number of different
                 datapoints and the second being the features' size.
         Returns:
             A boolean indicating whether the data follow a \alpha-unimodal distribution.
@@ -37,6 +37,8 @@ class UnimodalityTest:
         ds = self.view.distances(x)
 
         _, pv = diptest(ds, boot_pval=self.boot_pval)
+
+        logger.debug(f'The unimodality statistic is: {pv}.')
 
         return pv > self.pval
 

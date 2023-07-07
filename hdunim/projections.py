@@ -39,8 +39,6 @@ class IdentityProjector(Projector):
         Returns:
             The original dimension of the Euclidean space that the data lie on.
         """
-
-        logger.debug('No projection is performed.')
         return dim
 
 
@@ -60,10 +58,6 @@ class JohnsonLindenstrauss(Projector):
             np.log2(dim).astype(int),
             1
         )
-
-        logger.debug(f'Based on the Johnson-Lindenstrauss lemma, the data will be '
-                     f'projected in the {projection_dim}-D space.')
-
         return projection_dim
 
 
