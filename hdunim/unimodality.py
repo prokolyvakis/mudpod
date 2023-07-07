@@ -79,7 +79,11 @@ class MonteCarloUnimodalityTest:
 
         func = self.tester.test
         with WorkerPool(n_jobs=self.workers_num) as pool:
-            tests = pool.map(func, generator(self.sim_num))
+            tests = pool.map(
+                func,
+                generator(self.sim_num),
+                iterable_len=self.sim_num
+            )
 
         logger.debug(f'The result of the Monte Carlo simulations is: {tests}')
 
