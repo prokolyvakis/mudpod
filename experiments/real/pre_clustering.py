@@ -7,7 +7,7 @@ Usage:
 
 Options:
   -h --help         Show this screen.
-  --samples=<s>     The number of samples [default: 200].
+  --samples=<s>     Optional number of samples [default: ].
   --seed=<sd>       The seed [default: 42].
 """
 from pathlib import Path
@@ -55,27 +55,9 @@ def get_data(
     if samples is None:
         return x, y
 
-    classes = np.unique(y)
-    xs = []
-    ys = []
-
-    # calculate the number of samples per class
-    samples_per_class = samples // len(classes)
-
-    for c in classes:
-        i = np.where(y == c)[0]
-        if len(i) > samples_per_class:
-            ids = np.random.choice(i, size=samples_per_class, replace=False)
-            xs.append(x[ids])
-            ys.append(y[ids])
-
-    xs = np.concatenate(xs)
-    ys = np.concatenate(ys)
-
-    # Shuffle embeddings and labels, retaining their correct order
-    indices = np.random.permutation(len(xs))
-    xs = xs[indices]
-    ys = ys[indices]
+    idx = np.random.choice(x.shape[0], size=samples, replace=False)
+    xs = x[idx]
+    ys = y[idx]
 
     return xs, ys
 
@@ -86,7 +68,9 @@ if __name__ == "__main__":
     SEED = int(arguments['--seed'])
     set_seed(SEED)
 
-    n_samples = int(arguments['--samples'])
+    n_samples = arguments['--samples'] or None
+    if n_samples is not None:
+        n_samples = int(n_samples)
     x, y = get_data(Path(arguments['<p>']), samples=n_samples)
 
     pt = str(arguments['<pj>'])
@@ -115,4 +99,4 @@ if __name__ == "__main__":
     reducer.fit(x)
     embeddings = reducer.transform(x)
 
-    plot_clustered_data(embeddings, clusters)
+    plot_clustered_data(embeddings, y)
