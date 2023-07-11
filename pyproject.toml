@@ -23,6 +23,7 @@ dependencies = [
     "plotly>=5.14.1",
     "umap-learn>=0.5.3",
     "docopt>=0.6.2",
+    "torchvision>=0.15.2",
 ]
 requires-python = ">=3.9"
 readme = "README.md"
