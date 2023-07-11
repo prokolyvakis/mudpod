@@ -15,6 +15,7 @@ from typing import Callable
 
 from docopt import docopt
 from loguru import logger
+import numpy as np
 from sklearn.datasets import make_blobs
 from sklearn.datasets import make_circles
 from sklearn.datasets import make_moons
@@ -69,6 +70,9 @@ if __name__ == "__main__":
     n_samples = int(arguments['--samples'])
     noise = float(arguments['--noise'])
     x, y = data_func(n_samples=n_samples, noise=noise, random_state=SEED)
+    # mask = np.isin(y, [0])
+    # x = x[mask]
+    # y = y[mask]
 
     msg = dict(arguments)
     msg['result'] = 'unimodal' if mct.test(x) else 'multimodal'

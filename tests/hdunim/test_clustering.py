@@ -12,7 +12,7 @@ from hdunim.projections import View
 set_seed(42)
 
 
-@pytest.mark.parametrize("projector", [JohnsonLindenstrauss])
+@pytest.mark.parametrize("projector", [JohnsonLindenstrauss()])
 @pytest.mark.parametrize("observer", [PercentileObserver(0.95)])
 @pytest.mark.parametrize("n_features", [200, 400])
 def test_dip_means_fit(projector, observer, n_features) -> None:

@@ -16,11 +16,11 @@ from hdunim.observer import Observer
 class Projector(Protocol):
     """The Projection Dim interface."""
 
-    @classmethod
-    def estimate_dim(cls, dim: int) -> int:
+    def estimate_dim(self, n: int, dim: int) -> int:
         """Estimate the dimension over which the projection will be performed.
 
         Args:
+            n: the number of data samples.
             dim: the original dimension of the Euclidean space that the data lie on.
         Returns:
             An integer indicating the projection dimension.
@@ -30,58 +30,39 @@ class Projector(Protocol):
 class IdentityProjector(Projector):
     """An identity transform that retains the initial dim."""
 
-    @classmethod
-    def estimate_dim(cls, dim: int) -> int:
-        """Returns the initial dimension.
+    def estimate_dim(self, n: int, dim: int) -> int:
+        """Estimate the dimension over which the projection will be performed.
 
         Args:
+            n: the number of data samples.
             dim: the original dimension of the Euclidean space that the data lie on.
         Returns:
-            The original dimension of the Euclidean space that the data lie on.
+            An integer indicating the projection dimension.
         """
         return dim
 
 
+@dataclass
 class JohnsonLindenstrauss(Projector):
     """An estimate of the projection dim based on the Johnson-Lindenstrauss lemma."""
+    
+    eps: float = 0.99
+    # the distortion factor.
 
-    @classmethod
-    def estimate_dim(cls, dim: int) -> int:
+    def estimate_dim(self, n: int, dim: int) -> int:
         """Estimate the dimension over which the projection will be performed.
 
         Args:
+            n: the number of data samples.
             dim: the original dimension of the Euclidean space that the data lie on.
         Returns:
             An integer indicating the projection dimension.
         """
+        projection_dim = np.log2(n)
         projection_dim = max(
-            np.log2(dim).astype(int),
+            int(projection_dim * 8 / (self.eps * self.eps)),
             1
         )
-        return projection_dim
-
-
-class ExponentiallyDescendOrAscend(JohnsonLindenstrauss):
-
-    @classmethod
-    def estimate_dim(cls, dim: int) -> int:
-        """Estimate the dimension over which the projection will be performed.
-
-        Args:
-            dim: the original dimension of the Euclidean space that the data lie on.
-        Returns:
-            An integer indicating the projection dimension.
-        """
-
-        projection_dim = super().estimate_dim(dim)
-
-        if projection_dim == 1:
-            projection_dim = np.ceil(np.exp2(dim)).astype(int)
-
-            logger.debug(
-                f'Ascend Case: the data will be projected into '
-                f'the {projection_dim}-D space'
-            )
         return projection_dim
 
 
@@ -118,8 +99,9 @@ class View:
         if self.projector == IdentityProjector:
             return arr
 
+        arr_n = arr.shape[0]
         arr_d = arr.shape[1]
-        d = self.projector.estimate_dim(arr_d)
+        d = self.projector.estimate_dim(arr_n, arr_d)
         p = GaussianRandomProjection(n_components=d)
 
         return p.fit_transform(arr)

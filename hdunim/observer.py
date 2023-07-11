@@ -43,6 +43,7 @@ class PercentileObserver(Observer):
 
     def get(self, arr: np.ndarray) -> np.ndarray:
         """Get the observer.
+
         Args:
             arr: A 2D numpy array with the first dimension being the number of different
                 datapoints and the second being the features' size.
@@ -75,6 +76,7 @@ class RandomObserver(Observer):
 
     def get(self, arr: np.ndarray) -> np.ndarray:
         """Get the observer.
+        
         Args:
             arr: A 2D numpy array with the first dimension being the number of different
                 datapoints and the second being the features' size.

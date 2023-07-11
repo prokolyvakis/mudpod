@@ -5,9 +5,8 @@ import numpy as np
 from sklearn.datasets import make_blobs
 
 from hdunim.misc import set_seed
-from hdunim.projections import JohnsonLindenstrauss
-from hdunim.projections import ExponentiallyDescendOrAscend
 from hdunim.projections import IdentityProjector
+from hdunim.projections import JohnsonLindenstrauss
 from hdunim.observer import PercentileObserver
 from hdunim.projections import View
 
@@ -16,26 +15,25 @@ set_seed(42)
 
 def test_identity_dim() -> None:
     """Test that IdentityProjector works smoothly."""
+    idp = IdentityProjector()
 
-    assert 42 == IdentityProjector.estimate_dim(42)
+    assert 42 == idp.estimate_dim(256, 42)
 
 
-@pytest.mark.parametrize("input_dim,projection_dim", [(32, 5), (128, 7), (1024, 10)])
-def test_johnson_lindenstrauss_dim(input_dim, projection_dim) -> None:
+@pytest.mark.parametrize(
+    "samples_num,projection_dim", 
+    [(32, 8 * 5), (128, 8 * 7), (1024, 8 * 10)]
+)
+def test_johnson_lindenstrauss_dim(samples_num, projection_dim) -> None:
     """Test that JohnsonLindenstrauss works smoothly."""
+    jlp = JohnsonLindenstrauss(eps=1.)
 
-    assert projection_dim == JohnsonLindenstrauss.estimate_dim(input_dim)
+    assert projection_dim == jlp.estimate_dim(samples_num, 128)
 
-
-@pytest.mark.parametrize("inp_dim,projection_dim", [(32, 5), (64, 6), (2, 4), (3, 8)])
-def test_johnson_lindenstrauss_or_ascend_dim(inp_dim: int, projection_dim: int) -> None:
-    """Test that ExponentiallyDescendOrAscend works smoothly."""
-
-    assert projection_dim == ExponentiallyDescendOrAscend.estimate_dim(inp_dim)
 
 @pytest.mark.parametrize(
     "projector",
-    [IdentityProjector, JohnsonLindenstrauss, ExponentiallyDescendOrAscend]
+    [IdentityProjector(), JohnsonLindenstrauss()]
 )
 @pytest.mark.parametrize("observer", [PercentileObserver(0.95)])
 @pytest.mark.parametrize("dtype", sorted(['euclidean', 'mahalanobis']))

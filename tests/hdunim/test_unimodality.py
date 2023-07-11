@@ -13,7 +13,7 @@ from hdunim.unimodality import MonteCarloUnimodalityTest
 set_seed(42)
 
 
-@pytest.mark.parametrize("projector", [JohnsonLindenstrauss])
+@pytest.mark.parametrize("projector", [JohnsonLindenstrauss()])
 @pytest.mark.parametrize("observer", [PercentileObserver(0.95)])
 @pytest.mark.parametrize("n_features", [200, 400])
 def test_unimodality_tester(projector, observer, n_features) -> None:
@@ -34,7 +34,7 @@ def test_unimodality_tester(projector, observer, n_features) -> None:
     assert not t.test(x)
 
 
-@pytest.mark.parametrize("projector", [JohnsonLindenstrauss])
+@pytest.mark.parametrize("projector", [JohnsonLindenstrauss()])
 @pytest.mark.parametrize("observer", [PercentileObserver(0.95)])
 @pytest.mark.parametrize("n_features", [200, 400])
 @pytest.mark.parametrize("workers_num", [0, 1, 10])
@@ -65,7 +65,7 @@ def test_monte_carlo_unimodality_tester_assertions() -> None:
 
     o = PercentileObserver(0.95)
 
-    v = View(JohnsonLindenstrauss, o)
+    v = View(JohnsonLindenstrauss(), o)
     t = UnimodalityTest(v, 0.05)
     with pytest.raises(ValueError):
         _ = MonteCarloUnimodalityTest(t, -1, 42)
