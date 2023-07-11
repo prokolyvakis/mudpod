@@ -1,6 +1,9 @@
 """Implementation of various auxiliary functions."""
 from dataclasses import dataclass
+from os import getpid
+from time import time
 import random
+
 
 import numpy as np
 from scipy.spatial.distance import euclidean
@@ -70,3 +73,8 @@ def set_seed(s: int):
     random.seed(s)
     np.random.seed(s)
     torch.manual_seed(s)
+
+
+def get_random_seed() -> int:
+    """Get a pseudo random seed."""
+    return (getpid() * int(time())) % 123456789

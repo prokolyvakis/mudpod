@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.random_projection import GaussianRandomProjection
 
 from hdunim.misc import assert_correct_input_size
+from hdunim.misc import get_random_seed
 from hdunim.misc import Distance
 from hdunim.observer import Observer
 
@@ -85,12 +86,14 @@ class View:
     def __post_init__(self, dtype: str):
         self.distance = Distance(dtype=dtype)
 
-    def project(self, arr: np.ndarray) -> np.ndarray:
+    def project(self, arr: np.ndarray, seeding: bool = False) -> np.ndarray:
         """Get the projected data.
 
         Args:
             arr: A 2D numpy array with the first dimension being the number of different
                     datapoints and the second being the features' size.
+            seeding: a boolean flag indicating whether a seed will be requested
+                    for the random projection [default: False].
         Returns:
             A 2D numpy array with the projected data.
         """
@@ -102,21 +105,24 @@ class View:
         arr_n = arr.shape[0]
         arr_d = arr.shape[1]
         d = self.projector.estimate_dim(arr_n, arr_d)
-        p = GaussianRandomProjection(n_components=d)
+        s = get_random_seed() if seeding else None
+        p = GaussianRandomProjection(n_components=d, random_state=s)
 
         return p.fit_transform(arr)
 
-    def distances(self, arr: np.ndarray) -> np.ndarray:
+    def distances(self, arr: np.ndarray, seeding: bool = False) -> np.ndarray:
         """Compute the distances from an observer.
 
         Args:
             arr: A 2D numpy array with the first dimension being the number of different
                     datapoints and the second being the features' size.
+            seeding: a boolean flag indicating whether a seed will be requested
+                    for the random projection [default: False].
         Returns:
             A 1D numpy array with the distances from a picked observer.
         """
 
-        x = self.project(arr)
+        x = self.project(arr, seeding)
         o = self.observer.get(x)
 
         return self.distance.compute(x, o)
