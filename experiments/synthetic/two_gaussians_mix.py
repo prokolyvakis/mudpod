@@ -11,6 +11,7 @@ Options:
   --seed=<sd>       The seed [default: 42].
 """
 import sys
+import warnings
 
 from docopt import docopt
 from loguru import logger
@@ -29,6 +30,7 @@ from hdunim.unimodality import MonteCarloUnimodalityTest
 logger.remove()
 # add a new handler with level set to INFO
 logger.add(sys.stderr, level="INFO")
+warnings.filterwarnings("ignore")
 
 
 if __name__ == "__main__":
@@ -38,13 +40,13 @@ if __name__ == "__main__":
     set_seed(SEED)
 
     pt = str(arguments['<pj>'])
-    p = JohnsonLindenstrauss if pt == 'jl' else IdentityProjector
+    p = JohnsonLindenstrauss() if pt == 'jl' else IdentityProjector()
     v = View(p, PercentileObserver(0.99))
     t = UnimodalityTest(v, float(arguments['<pv>']))
     mct = MonteCarloUnimodalityTest(
         t,
         sim_num=int(arguments['<sims>']),
-        workers_num=10
+        workers_num=1
     )
 
     n_samples = int(arguments['--samples'])
@@ -60,9 +62,11 @@ if __name__ == "__main__":
     msg = dict(arguments)
     msg['groundtruth'] = g.t
     msg['result'] = tr
+    msg.pop('--help')
+
     logger.info(
         'The inputs and the output of the experiments is: '
         f'{msg}'
     )
 
-    plot_clustered_data(g.x, g.y)
+    # plot_clustered_data(g.x, g.y)

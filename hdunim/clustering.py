@@ -138,7 +138,7 @@ class DipMeans(KMeans):
 
             masked_ests = ma.masked_array(ests, ests < self.mc_test.tester.pval)
             if masked_ests.mask.all():
-                logger.info(f"The final number of clusters is: {self.n_clusters}.")
+                logger.debug(f"The final number of clusters is: {self.n_clusters}.")
                 break
 
             i_max = ma.argmax(masked_ests)
