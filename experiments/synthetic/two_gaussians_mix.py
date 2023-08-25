@@ -1,7 +1,7 @@
 """Unimodality hypothesis testing experiments with a mixture of 2D gaussians.
 
 Usage:
-  two_gaussians_mix.py <pj> <pv> <sims> [--samples=<s> --noise=<n> --seed=<sd>]
+  two_gaussians_mix.py <pj> <pv> <sims> [--samples=<s> --noise=<n> --seed=<sd> --dist=<ds> --obs=<o> --plot=<f>]
   two_gaussians_mix.py -h | --help
 
 Options:
@@ -9,6 +9,9 @@ Options:
   --samples=<s>     The number of samples [default: 200].
   --noise=<n>       The standard deviation inside the clusters [default: 0].
   --seed=<sd>       The seed [default: 42].
+  --dist=<ds>       The type of distance [default: mahalanobis].
+  --obs=<o>         The type of the observer [default: percentile].
+  --plot=<f>        Whether to produce a plot or not [default: False].
 """
 import sys
 import warnings
@@ -22,6 +25,7 @@ from hdunim.misc import set_seed
 from hdunim.projections import IdentityProjector
 from hdunim.projections import JohnsonLindenstrauss
 from hdunim.observer import PercentileObserver
+from hdunim.observer import RandomObserver
 from hdunim.projections import View
 from hdunim.unimodality import UnimodalityTest
 from hdunim.unimodality import MonteCarloUnimodalityTest
@@ -40,8 +44,23 @@ if __name__ == "__main__":
     set_seed(SEED)
 
     pt = str(arguments['<pj>'])
-    p = JohnsonLindenstrauss() if pt == 'jl' else IdentityProjector()
-    v = View(p, PercentileObserver(0.99))
+    if pt == 'jl':
+        p = JohnsonLindenstrauss()
+    elif pt == 'i':
+        p = IdentityProjector()
+    else:
+       raise ValueError(f'The projection type: {pt} is not supported!')
+    
+    dt = str(arguments['--dist'])
+    ot = str(arguments['--obs'])
+    if ot == 'percentile':
+        o = PercentileObserver(0.99, dt)
+    elif ot == 'random':
+        o = RandomObserver()
+    else:
+       raise ValueError(f'The observer type: {ot} is not supported!')
+
+    v = View(p, o, dt)
     t = UnimodalityTest(v, float(arguments['<pv>']))
     mct = MonteCarloUnimodalityTest(
         t,
@@ -58,15 +77,18 @@ if __name__ == "__main__":
     )
 
     tr = 'unimodal' if mct.test(g.x) else 'bimodal'
-    logger.info(f'The statistical test says {tr} and the data were {g.t}!')
     msg = dict(arguments)
     msg['groundtruth'] = g.t
     msg['result'] = tr
     msg.pop('--help')
+    msg['parity'] = int(tr == g.t)
+
+    if eval(msg['--plot']):
+       plot_clustered_data(g.x, g.y)
+    
+    msg.pop('--plot')
 
     logger.info(
         'The inputs and the output of the experiments is: '
         f'{msg}'
     )
-
-    # plot_clustered_data(g.x, g.y)
