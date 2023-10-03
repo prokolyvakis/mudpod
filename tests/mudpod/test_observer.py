@@ -3,8 +3,8 @@ import pytest
 
 import numpy as np
 
-from hdunim.misc import set_seed
-from hdunim.observer import PercentileObserver
+from mudpod.misc import set_seed
+from mudpod.observer import PercentileObserver
 
 set_seed(42)
 

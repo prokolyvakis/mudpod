@@ -1,40 +1,76 @@
-"""Clustering experiments with synthetic datasets."""
-import sys
+"""Clustering experiments with synthetic datasets.
 
+Usage:
+  clustering.py <d> <pj> <pv> <sims> [--samples=<s> --noise=<n> --seed=<sd>  --dist=<ds> --obs=<o>]
+  clustering.py -h | --help
+
+Options:
+  -h --help         Show this screen.
+  --samples=<s>     The number of samples [default: 200].
+  --noise=<n>       The standard deviation inside the clusters [default: 0].
+  --seed=<sd>       The seed [default: 42].
+  --dist=<ds>       The type of distance [default: mahalanobis].
+  --obs=<o>         The type of the observer [default: percentile].
+"""
+import sys
+import warnings
+
+from docopt import docopt
 from loguru import logger
 from sklearn.metrics import normalized_mutual_info_score
 
 from experiments.common import plot_clustered_data
 from experiments.synthetic.misc import load
-from hdunim.clustering import DipMeans
-from hdunim.projections import IdentityProjector
-from hdunim.projections import JohnsonLindenstrauss
-from hdunim.observer import PercentileObserver
-from hdunim.observer import RandomObserver
-from hdunim.projections import View
-from hdunim.misc import set_seed
+from mudpod.clustering import DipMeans
+from mudpod.projections import IdentityProjector
+from mudpod.projections import JohnsonLindenstrauss
+from mudpod.observer import PercentileObserver
+from mudpod.observer import RandomObserver
+from mudpod.projections import View
+from mudpod.misc import set_seed
 
-SEED = 128
-
-set_seed(SEED)
 
 logger.remove()
 # add a new handler with level set to INFO
 logger.add(sys.stderr, level="INFO")
+warnings.filterwarnings("ignore")
 
 
 if __name__ == "__main__":
-    fname = 'xclara.arff'
-    x, y = load(fname)
-    # mask = np.isin(y, [5, 8])
-    # x = x[mask]
-    # y = y[mask]
+    arguments = docopt(__doc__)
 
-    v = View(JohnsonLindenstrauss, PercentileObserver(0.99))
-    # v = View(JohnsonLindenstrauss, RandomObserver())
-    # v = View(IdentityProjector, RandomObserver())
+    x, y = load(str(arguments['<d>']))
 
-    dm = DipMeans(view=v, pval=0.001, sim_num=100, workers_num=10, random_state=SEED)
+    SEED = int(arguments['--seed'])
+    set_seed(SEED)
+
+    pt = str(arguments['<pj>'])
+    if pt == 'jl':
+        p = JohnsonLindenstrauss()
+    elif pt == 'i':
+        p = IdentityProjector()
+    else:
+       raise ValueError(f'The projection type: {pt} is not supported!')
+    
+
+    dt = str(arguments['--dist'])
+    ot = str(arguments['--obs'])
+    if ot == 'percentile':
+        o = PercentileObserver(0.99, dt)
+    elif ot == 'random':
+        o = RandomObserver()
+    else:
+       raise ValueError(f'The observer type: {ot} is not supported!')
+
+    v = View(p, o, dt)
+
+    dm = DipMeans(
+        view=v,
+        pval=float(arguments['<pv>']),
+        sim_num=int(arguments['<sims>']),
+        workers_num=1,
+        random_state=SEED
+    )
 
     clusters = dm.fit(x).labels_
 

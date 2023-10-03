@@ -1,7 +1,7 @@
 """Unimodality hypothesis testing experiments with synthetic datasets.
 
 Usage:
-  unimodality.py <d> <pj> <pv> <sims> [--samples=<s> --noise=<n> --seed=<sd>]
+  unimodality.py <d> <pj> <pv> <sims> [--samples=<s> --noise=<n> --seed=<sd> --dist=<ds> --obs=<o> --plot=<f>]
   unimodality.py -h | --help
 
 Options:
@@ -9,9 +9,13 @@ Options:
   --samples=<s>     The number of samples [default: 200].
   --noise=<n>       The standard deviation inside the clusters [default: 0].
   --seed=<sd>       The seed [default: 42].
+  --dist=<ds>       The type of distance [default: mahalanobis].
+  --obs=<o>         The type of the observer [default: percentile].
+  --plot=<f>        Whether to produce a plot or not [default: False].
 """
 import sys
 from typing import Callable
+import warnings
 
 from docopt import docopt
 from loguru import logger
@@ -24,20 +28,23 @@ from sklearn.datasets import load_digits
 from sklearn.datasets import load_iris
 
 from experiments.common import plot_clustered_data
-from hdunim.misc import set_seed
-from hdunim.projections import IdentityProjector
-from hdunim.projections import JohnsonLindenstrauss
-from hdunim.observer import PercentileObserver
-from hdunim.projections import View
-from hdunim.unimodality import UnimodalityTest
-from hdunim.unimodality import MonteCarloUnimodalityTest
+from mudpod.misc import set_seed
+from mudpod.projections import IdentityProjector
+from mudpod.projections import JohnsonLindenstrauss
+from mudpod.observer import PercentileObserver
+from mudpod.observer import RandomObserver
+from mudpod.projections import View
+from mudpod.unimodality import UnimodalityTest
+from mudpod.unimodality import MonteCarloUnimodalityTest
 
 logger.remove()
 # add a new handler with level set to INFO
 logger.add(sys.stderr, level="INFO")
+warnings.filterwarnings("ignore")
 
 
 def get_dataset(name: str) -> Callable:
+    """Get a sklearn dataset according to name."""
     if name == 'circles':
         return make_circles
     elif name == 'moons':
@@ -57,28 +64,47 @@ if __name__ == "__main__":
     set_seed(SEED)
 
     pt = str(arguments['<pj>'])
-    p = JohnsonLindenstrauss if pt == 'jl' else IdentityProjector
-    v = View(p, PercentileObserver(0.99))
+    if pt == 'jl':
+        p = JohnsonLindenstrauss()
+    elif pt == 'i':
+        p = IdentityProjector()
+    else:
+       raise ValueError(f'The projection type: {pt} is not supported!')
+    
+
+    dt = str(arguments['--dist'])
+    ot = str(arguments['--obs'])
+    if ot == 'percentile':
+        o = PercentileObserver(0.99, dt)
+    elif ot == 'random':
+        o = RandomObserver()
+    else:
+       raise ValueError(f'The observer type: {ot} is not supported!')
+
+    v = View(p, o, dt)
     t = UnimodalityTest(v, float(arguments['<pv>']))
     mct = MonteCarloUnimodalityTest(
         t,
         sim_num=int(arguments['<sims>']),
-        workers_num=10
+        workers_num=1
     )
 
     data_func = get_dataset(str(arguments['<d>']))
     n_samples = int(arguments['--samples'])
     noise = float(arguments['--noise'])
     x, y = data_func(n_samples=n_samples, noise=noise, random_state=SEED)
-    # mask = np.isin(y, [0])
-    # x = x[mask]
-    # y = y[mask]
 
     msg = dict(arguments)
     msg['result'] = 'unimodal' if mct.test(x) else 'multimodal'
+    msg.pop('--help')
+
+    if eval(msg['--plot']):
+       plot_clustered_data(x, y)
+    
+    msg.pop('--plot')
+
     logger.info(
         'The inputs and the output of the experiments is: '
         f'{msg}'
     )
 
-    plot_clustered_data(x, y)

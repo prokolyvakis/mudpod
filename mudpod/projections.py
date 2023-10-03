@@ -8,10 +8,10 @@ from loguru import logger
 import numpy as np
 from sklearn.random_projection import GaussianRandomProjection
 
-from hdunim.misc import assert_correct_input_size
-from hdunim.misc import get_random_seed
-from hdunim.misc import Distance
-from hdunim.observer import Observer
+from mudpod.misc import assert_correct_input_size
+from mudpod.misc import get_random_seed
+from mudpod.misc import Distance
+from mudpod.observer import Observer
 
 
 class Projector(Protocol):

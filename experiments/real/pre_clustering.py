@@ -2,17 +2,21 @@
    pre-trained embeddings stored in Numpy saved arrays.
 
 Usage:
-  pre_clustering.py <p> <pj> <pv> <sims> [--samples=<s> --seed=<sd>]
+  pre_clustering.py <p> <pj> <pv> <sims> [--samples=<s> --seed=<sd> --dist=<ds> --obs=<o> --plot=<f>]
   pre_clustering.py -h | --help
 
 Options:
   -h --help         Show this screen.
   --samples=<s>     Optional number of samples [default: ].
   --seed=<sd>       The seed [default: 42].
+  --dist=<ds>       The type of distance [default: mahalanobis].
+  --obs=<o>         The type of the observer [default: percentile].
+  --plot=<f>        Whether to produce a plot or not [default: False].
 """
 from pathlib import Path
 import sys
 from typing import Optional
+import warnings
 
 from docopt import docopt
 from loguru import logger
@@ -24,17 +28,19 @@ from sklearn.metrics import silhouette_score
 from umap import UMAP
 
 from experiments.common import plot_clustered_data
-from hdunim.misc import set_seed
-from hdunim.clustering import DipMeans
-from hdunim.projections import IdentityProjector
-from hdunim.projections import JohnsonLindenstrauss
-from hdunim.observer import PercentileObserver
-from hdunim.projections import View
+from mudpod.misc import set_seed
+from mudpod.clustering import DipMeans
+from mudpod.projections import IdentityProjector
+from mudpod.projections import JohnsonLindenstrauss
+from mudpod.observer import PercentileObserver
+from mudpod.observer import RandomObserver
+from mudpod.projections import View
 
 
 logger.remove()
 # add a new handler with level set to INFO
 logger.add(sys.stderr, level="INFO")
+warnings.filterwarnings("ignore")
 
 
 def get_data(
@@ -49,8 +55,9 @@ def get_data(
             'Either the embeddings or the labels do not confront to the naming'
             ' convention, i.e., the embeddings to be stored in a file named:'
             ' `embeddings.npy` and the labels in a file named: `labels.npy`!'
+            ' Original error: %s', str(e)
         )
-        raise FileNotFoundError(e)
+        raise
     
     if samples is None:
         return x, y
@@ -65,23 +72,39 @@ def get_data(
 if __name__ == "__main__":
     arguments = docopt(__doc__)
 
-    SEED = int(arguments['--seed'])
-    set_seed(SEED)
-
     n_samples = arguments['--samples'] or None
     if n_samples is not None:
         n_samples = int(n_samples)
     x, y = get_data(Path(arguments['<p>']), samples=n_samples)
 
+    SEED = int(arguments['--seed'])
+    set_seed(SEED)
+
     pt = str(arguments['<pj>'])
-    p = JohnsonLindenstrauss if pt == 'jl' else IdentityProjector
-    v = View(p, PercentileObserver(0.99))
+    if pt == 'jl':
+        p = JohnsonLindenstrauss()
+    elif pt == 'i':
+        p = IdentityProjector()
+    else:
+       raise ValueError(f'The projection type: {pt} is not supported!')
     
+
+    dt = str(arguments['--dist'])
+    ot = str(arguments['--obs'])
+    if ot == 'percentile':
+        o = PercentileObserver(0.99, dt)
+    elif ot == 'random':
+        o = RandomObserver()
+    else:
+       raise ValueError(f'The observer type: {ot} is not supported!')
+
+    v = View(p, o, dt)
+
     dm = DipMeans(
         view=v,
         pval=float(arguments['<pv>']),
         sim_num=int(arguments['<sims>']),
-        workers_num=10,
+        workers_num=1,
         random_state=SEED
     )
 
@@ -90,13 +113,18 @@ if __name__ == "__main__":
 
     msg = dict(arguments)
     msg['result'] = f'The NMI score is {nmi}'
+    msg.pop('--help')
+
+    if eval(msg['--plot']):
+        reducer = UMAP(random_state=SEED)
+        reducer.fit(x)
+        embeddings = reducer.transform(x)
+
+        plot_clustered_data(embeddings, y)
+    
+    msg.pop('--plot')
+
     logger.info(
         'The inputs and the output of the experiment is: '
         f'{msg}'
     )
-
-    reducer = UMAP(random_state=SEED)
-    reducer.fit(x)
-    embeddings = reducer.transform(x)
-
-    plot_clustered_data(embeddings, y)

@@ -6,8 +6,8 @@ from typing import Protocol
 
 import numpy as np
 
-from hdunim.misc import assert_correct_input_size
-from hdunim.misc import Distance
+from mudpod.misc import assert_correct_input_size
+from mudpod.misc import Distance
 
 
 class Observer(Protocol):

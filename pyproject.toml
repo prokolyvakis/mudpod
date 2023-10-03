@@ -1,7 +1,7 @@
 [project]
-name = "hdunim"
-version = "0.0.1"
-description = "Unimodality in High-Dimensional Euclidean Space"
+name = "mudpod"
+version = "0.1"
+description = " Testing Unimodality in Multivariate Euclidean Space"
 authors = [
     {name = "Prodromos Kolyvakis", email = "prokolyvakis@gmail.com"},
 ]

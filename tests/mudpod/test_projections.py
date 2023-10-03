@@ -4,11 +4,11 @@ import pytest
 import numpy as np
 from sklearn.datasets import make_blobs
 
-from hdunim.misc import set_seed
-from hdunim.projections import IdentityProjector
-from hdunim.projections import JohnsonLindenstrauss
-from hdunim.observer import PercentileObserver
-from hdunim.projections import View
+from mudpod.misc import set_seed
+from mudpod.projections import IdentityProjector
+from mudpod.projections import JohnsonLindenstrauss
+from mudpod.observer import PercentileObserver
+from mudpod.projections import View
 
 set_seed(42)
 

@@ -21,14 +21,14 @@ from loguru import logger
 
 from experiments.common import plot_clustered_data
 from experiments.synthetic.misc import TwoDimGaussianSumGenerator
-from hdunim.misc import set_seed
-from hdunim.projections import IdentityProjector
-from hdunim.projections import JohnsonLindenstrauss
-from hdunim.observer import PercentileObserver
-from hdunim.observer import RandomObserver
-from hdunim.projections import View
-from hdunim.unimodality import UnimodalityTest
-from hdunim.unimodality import MonteCarloUnimodalityTest
+from mudpod.misc import set_seed
+from mudpod.projections import IdentityProjector
+from mudpod.projections import JohnsonLindenstrauss
+from mudpod.observer import PercentileObserver
+from mudpod.observer import RandomObserver
+from mudpod.projections import View
+from mudpod.unimodality import UnimodalityTest
+from mudpod.unimodality import MonteCarloUnimodalityTest
 
 
 logger.remove()

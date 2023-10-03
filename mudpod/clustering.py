@@ -13,9 +13,9 @@ import numpy.ma as ma
 from sklearn.cluster import KMeans
 from sklearn.utils._param_validation import Interval
 
-from hdunim.projections import View
-from hdunim.unimodality import UnimodalityTest
-from hdunim.unimodality import MonteCarloUnimodalityTest
+from mudpod.projections import View
+from mudpod.unimodality import UnimodalityTest
+from mudpod.unimodality import MonteCarloUnimodalityTest
 
 
 @dataclass

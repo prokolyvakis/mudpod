@@ -3,11 +3,11 @@ import pytest
 
 from sklearn.datasets import make_blobs
 
-from hdunim.misc import set_seed
-from hdunim.clustering import DipMeans
-from hdunim.projections import JohnsonLindenstrauss
-from hdunim.observer import PercentileObserver
-from hdunim.projections import View
+from mudpod.misc import set_seed
+from mudpod.clustering import DipMeans
+from mudpod.projections import JohnsonLindenstrauss
+from mudpod.observer import PercentileObserver
+from mudpod.projections import View
 
 set_seed(42)
 

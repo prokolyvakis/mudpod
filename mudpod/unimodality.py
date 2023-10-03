@@ -6,7 +6,7 @@ from loguru import logger
 from mpire import WorkerPool
 import numpy as np
 
-from hdunim.projections import View
+from mudpod.projections import View
 
 
 @dataclass

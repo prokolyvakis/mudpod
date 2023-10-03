@@ -2,6 +2,7 @@
    pre-trained hugging face models.
 """
 import sys
+import warnings
 
 from loguru import logger
 import numpy as np
@@ -14,13 +15,13 @@ from umap import UMAP
 from experiments.common import plot_clustered_data
 from experiments.real.utils import DataHandler
 from experiments.real.utils import SplitMode
-from hdunim.clustering import DipMeans
-from hdunim.projections import IdentityProjector
-from hdunim.projections import JohnsonLindenstrauss
-from hdunim.observer import PercentileObserver
-from hdunim.observer import RandomObserver
-from hdunim.projections import View
-from hdunim.misc import set_seed
+from mudpod.clustering import DipMeans
+from mudpod.projections import IdentityProjector
+from mudpod.projections import JohnsonLindenstrauss
+from mudpod.observer import PercentileObserver
+from mudpod.observer import RandomObserver
+from mudpod.projections import View
+from mudpod.misc import set_seed
 
 SEED = 120
 
@@ -30,6 +31,7 @@ set_seed(SEED)
 logger.remove()
 # add a new handler with level set to INFO
 logger.add(sys.stderr, level="INFO")
+warnings.filterwarnings("ignore")
 
 
 if __name__ == "__main__":
@@ -50,7 +52,6 @@ if __name__ == "__main__":
     x, y = data_handler.get(SplitMode.TEST)
 
     v = View(JohnsonLindenstrauss, PercentileObserver(0.99))
-    # v = View(IdentityProjector, RandomObserver(), 'mahalanobis')
 
     dm = DipMeans(view=v, pval=0.05, sim_num=100, workers_num=10, random_state=SEED)
 
