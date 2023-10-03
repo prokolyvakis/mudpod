@@ -2,6 +2,15 @@
 import numpy as np
 import plotly.graph_objects as go
 
+from mudpod.clustering import DipMeans
+from mudpod.projections import IdentityProjector
+from mudpod.projections import JohnsonLindenstrauss
+from mudpod.observer import PercentileObserver
+from mudpod.observer import RandomObserver
+from mudpod.projections import View
+from mudpod.unimodality import UnimodalityTest
+from mudpod.unimodality import MonteCarloUnimodalityTest
+
 
 def plot_clustered_data(data: np.ndarray, labels: np.ndarray) -> None:
     """Plots clustered data.
@@ -61,3 +70,78 @@ def group_data_points(data: np.ndarray, clusters: np.ndarray) -> list[np.ndarray
     m = m[m[:, -1].argsort()]
     m = np.split(m[:, :-1], np.unique(m[:, -1], return_index=True)[1][1:])
     return m
+
+
+def get_view(arguments: dict) -> View:
+    """Get a view based on the config parameters existing in arguments.
+
+    Args:
+        arguments: a dict containing the config parameters.
+    Returns:
+        The parametrized view.
+    """
+    pt = str(arguments['<pj>'])
+    if pt == 'jl':
+        p = JohnsonLindenstrauss()
+    elif pt == 'i':
+        p = IdentityProjector()
+    else:
+       raise ValueError(f'The projection type: {pt} is not supported!')
+    
+
+    dt = str(arguments['--dist'])
+    ot = str(arguments['--obs'])
+    if ot == 'percentile':
+        o = PercentileObserver(0.99, dt)
+    elif ot == 'random':
+        o = RandomObserver()
+    else:
+       raise ValueError(f'The observer type: {ot} is not supported!')
+
+    v = View(p, o, dt)
+
+    return v
+
+
+def get_monte_carlo_test(arguments: dict, workers_num: int = 1) -> MonteCarloUnimodalityTest:
+    """Get a Monte Carlo unimodality test.
+
+    Args:
+        arguments: a dict containing the config parameters.
+        workers_num: an integer indicating the number of workers.
+    Returns:
+        A parametrized Monte Carlo unimodality test.
+    """
+    v = get_view(arguments)
+
+    t = UnimodalityTest(v, float(arguments['<pv>']))
+    mct = MonteCarloUnimodalityTest(
+        t,
+        sim_num=int(arguments['<sims>']),
+        workers_num=workers_num
+    )
+
+    return mct
+
+
+def get_dip_means(arguments: dict, seed: int, workers_num: int = 1) -> DipMeans:
+    """Get a DipMeans clustering instance.
+
+    Args:
+        arguments: a dict containing the config parameters.
+        seed: a random seed.
+        workers_num: an integer indicating the number of workers.
+    Returns:
+        A parametrized DipMeans instance.
+    """
+    v = get_view(arguments)
+
+    dm = DipMeans(
+        view=v,
+        pval=float(arguments['<pv>']),
+        sim_num=int(arguments['<sims>']),
+        workers_num=workers_num,
+        random_state=seed
+    )
+
+    return dm

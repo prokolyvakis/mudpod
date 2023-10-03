@@ -27,14 +27,9 @@ from sklearn.metrics import normalized_mutual_info_score
 from sklearn.metrics import silhouette_score
 from umap import UMAP
 
+from experiments.common import get_dip_means
 from experiments.common import plot_clustered_data
 from mudpod.misc import set_seed
-from mudpod.clustering import DipMeans
-from mudpod.projections import IdentityProjector
-from mudpod.projections import JohnsonLindenstrauss
-from mudpod.observer import PercentileObserver
-from mudpod.observer import RandomObserver
-from mudpod.projections import View
 
 
 logger.remove()
@@ -72,40 +67,17 @@ def get_data(
 if __name__ == "__main__":
     arguments = docopt(__doc__)
 
+    SEED = int(arguments['--seed'])
+    set_seed(SEED)
+
     n_samples = arguments['--samples'] or None
     if n_samples is not None:
         n_samples = int(n_samples)
     x, y = get_data(Path(arguments['<p>']), samples=n_samples)
 
-    SEED = int(arguments['--seed'])
-    set_seed(SEED)
-
-    pt = str(arguments['<pj>'])
-    if pt == 'jl':
-        p = JohnsonLindenstrauss()
-    elif pt == 'i':
-        p = IdentityProjector()
-    else:
-       raise ValueError(f'The projection type: {pt} is not supported!')
-    
-
-    dt = str(arguments['--dist'])
-    ot = str(arguments['--obs'])
-    if ot == 'percentile':
-        o = PercentileObserver(0.99, dt)
-    elif ot == 'random':
-        o = RandomObserver()
-    else:
-       raise ValueError(f'The observer type: {ot} is not supported!')
-
-    v = View(p, o, dt)
-
-    dm = DipMeans(
-        view=v,
-        pval=float(arguments['<pv>']),
-        sim_num=int(arguments['<sims>']),
-        workers_num=1,
-        random_state=SEED
+    dm = get_dip_means(
+        arguments=arguments,
+        seed=SEED
     )
 
     clusters = dm.fit(x).labels_

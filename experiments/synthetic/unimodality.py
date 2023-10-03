@@ -27,15 +27,9 @@ from sklearn.datasets import make_swiss_roll
 from sklearn.datasets import load_digits
 from sklearn.datasets import load_iris
 
+from experiments.common import get_monte_carlo_test
 from experiments.common import plot_clustered_data
 from mudpod.misc import set_seed
-from mudpod.projections import IdentityProjector
-from mudpod.projections import JohnsonLindenstrauss
-from mudpod.observer import PercentileObserver
-from mudpod.observer import RandomObserver
-from mudpod.projections import View
-from mudpod.unimodality import UnimodalityTest
-from mudpod.unimodality import MonteCarloUnimodalityTest
 
 logger.remove()
 # add a new handler with level set to INFO
@@ -63,36 +57,12 @@ if __name__ == "__main__":
     SEED = int(arguments['--seed'])
     set_seed(SEED)
 
-    pt = str(arguments['<pj>'])
-    if pt == 'jl':
-        p = JohnsonLindenstrauss()
-    elif pt == 'i':
-        p = IdentityProjector()
-    else:
-       raise ValueError(f'The projection type: {pt} is not supported!')
-    
-
-    dt = str(arguments['--dist'])
-    ot = str(arguments['--obs'])
-    if ot == 'percentile':
-        o = PercentileObserver(0.99, dt)
-    elif ot == 'random':
-        o = RandomObserver()
-    else:
-       raise ValueError(f'The observer type: {ot} is not supported!')
-
-    v = View(p, o, dt)
-    t = UnimodalityTest(v, float(arguments['<pv>']))
-    mct = MonteCarloUnimodalityTest(
-        t,
-        sim_num=int(arguments['<sims>']),
-        workers_num=1
-    )
-
     data_func = get_dataset(str(arguments['<d>']))
     n_samples = int(arguments['--samples'])
     noise = float(arguments['--noise'])
     x, y = data_func(n_samples=n_samples, noise=noise, random_state=SEED)
+
+    mct = get_monte_carlo_test(arguments=arguments, workers_num=1)
 
     msg = dict(arguments)
     msg['result'] = 'unimodal' if mct.test(x) else 'multimodal'

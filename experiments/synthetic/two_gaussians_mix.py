@@ -19,16 +19,10 @@ import warnings
 from docopt import docopt
 from loguru import logger
 
+from experiments.common import get_monte_carlo_test
 from experiments.common import plot_clustered_data
 from experiments.synthetic.misc import TwoDimGaussianSumGenerator
 from mudpod.misc import set_seed
-from mudpod.projections import IdentityProjector
-from mudpod.projections import JohnsonLindenstrauss
-from mudpod.observer import PercentileObserver
-from mudpod.observer import RandomObserver
-from mudpod.projections import View
-from mudpod.unimodality import UnimodalityTest
-from mudpod.unimodality import MonteCarloUnimodalityTest
 
 
 logger.remove()
@@ -43,31 +37,6 @@ if __name__ == "__main__":
     SEED = int(arguments['--seed'])
     set_seed(SEED)
 
-    pt = str(arguments['<pj>'])
-    if pt == 'jl':
-        p = JohnsonLindenstrauss()
-    elif pt == 'i':
-        p = IdentityProjector()
-    else:
-       raise ValueError(f'The projection type: {pt} is not supported!')
-    
-    dt = str(arguments['--dist'])
-    ot = str(arguments['--obs'])
-    if ot == 'percentile':
-        o = PercentileObserver(0.99, dt)
-    elif ot == 'random':
-        o = RandomObserver()
-    else:
-       raise ValueError(f'The observer type: {ot} is not supported!')
-
-    v = View(p, o, dt)
-    t = UnimodalityTest(v, float(arguments['<pv>']))
-    mct = MonteCarloUnimodalityTest(
-        t,
-        sim_num=int(arguments['<sims>']),
-        workers_num=1
-    )
-
     n_samples = int(arguments['--samples'])
     std = float(arguments['--noise'])
     g = TwoDimGaussianSumGenerator(
@@ -75,6 +44,8 @@ if __name__ == "__main__":
       cluster_std=std, 
       random_state=SEED
     )
+
+    mct = get_monte_carlo_test(arguments=arguments, workers_num=1)
 
     tr = 'unimodal' if mct.test(g.x) else 'bimodal'
     msg = dict(arguments)
