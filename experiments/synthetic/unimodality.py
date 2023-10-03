@@ -51,20 +51,20 @@ def get_dataset(name: str) -> Callable:
         raise ValueError(msg)
 
 
-if __name__ == "__main__":
-    arguments = docopt(__doc__)
+def run(args: dict) -> None:
+    """Main runner."""
 
-    SEED = int(arguments['--seed'])
+    SEED = int(args['--seed'])
     set_seed(SEED)
 
-    data_func = get_dataset(str(arguments['<d>']))
-    n_samples = int(arguments['--samples'])
-    noise = float(arguments['--noise'])
+    data_func = get_dataset(str(args['<d>']))
+    n_samples = int(args['--samples'])
+    noise = float(args['--noise'])
     x, y = data_func(n_samples=n_samples, noise=noise, random_state=SEED)
 
-    mct = get_monte_carlo_test(arguments=arguments, workers_num=1)
+    mct = get_monte_carlo_test(arguments=args, workers_num=1)
 
-    msg = dict(arguments)
+    msg = dict(args)
     msg['result'] = 'unimodal' if mct.test(x) else 'multimodal'
     msg.pop('--help')
 
@@ -78,3 +78,8 @@ if __name__ == "__main__":
         f'{msg}'
     )
 
+
+if __name__ == "__main__":
+    arguments = docopt(__doc__)
+
+    run(args=arguments)

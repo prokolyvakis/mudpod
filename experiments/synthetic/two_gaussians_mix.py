@@ -31,24 +31,24 @@ logger.add(sys.stderr, level="INFO")
 warnings.filterwarnings("ignore")
 
 
-if __name__ == "__main__":
-    arguments = docopt(__doc__)
+def run(args: dict) -> None:
+    """Main runner."""
 
-    SEED = int(arguments['--seed'])
+    SEED = int(args['--seed'])
     set_seed(SEED)
 
-    n_samples = int(arguments['--samples'])
-    std = float(arguments['--noise'])
+    n_samples = int(args['--samples'])
+    std = float(args['--noise'])
     g = TwoDimGaussianSumGenerator(
       n=n_samples,
       cluster_std=std, 
       random_state=SEED
     )
 
-    mct = get_monte_carlo_test(arguments=arguments, workers_num=1)
+    mct = get_monte_carlo_test(arguments=args, workers_num=1)
 
     tr = 'unimodal' if mct.test(g.x) else 'bimodal'
-    msg = dict(arguments)
+    msg = dict(args)
     msg['groundtruth'] = g.t
     msg['result'] = tr
     msg.pop('--help')
@@ -63,3 +63,9 @@ if __name__ == "__main__":
         'The inputs and the output of the experiments is: '
         f'{msg}'
     )
+
+
+if __name__ == "__main__":
+    arguments = docopt(__doc__)
+
+    run(args=arguments)

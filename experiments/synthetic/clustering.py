@@ -31,17 +31,15 @@ logger.add(sys.stderr, level="INFO")
 warnings.filterwarnings("ignore")
 
 
-if __name__ == "__main__":
-    arguments = docopt(__doc__)
-
-    SEED = int(arguments['--seed'])
+def run(args: dict) -> None:
+    """Main runner."""
+    SEED = int(args['--seed'])
     set_seed(SEED)
 
-    x, y = load(str(arguments['<d>']))
-
+    x, y = load(str(args['<d>']))
     
     dm = get_dip_means(
-        arguments=arguments,
+        arguments=args,
         seed=SEED
     )
 
@@ -50,3 +48,9 @@ if __name__ == "__main__":
     logger.info(f'The NMI score is {normalized_mutual_info_score(y, clusters)}')
 
     plot_clustered_data(x, clusters)
+
+
+if __name__ == "__main__":
+    arguments = docopt(__doc__)
+
+    run(args=arguments)
