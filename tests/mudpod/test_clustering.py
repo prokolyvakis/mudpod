@@ -13,13 +13,13 @@ set_seed(42)
 
 
 @pytest.mark.parametrize("projector", [JohnsonLindenstrauss()])
-@pytest.mark.parametrize("observer_fn", [lambda a: PercentileObserver(0.95, a)])
+@pytest.mark.parametrize("observer_fn", [lambda a: PercentileObserver(0.95, alpha=a)])
 @pytest.mark.parametrize("alpha", [1, 2, 4])
 @pytest.mark.parametrize("n_features", [200, 400])
 def test_dip_means_fit(projector, observer_fn, alpha, n_features) -> None:
     """Test that the dip means class is properly initialized"""
 
-    v = View(projector, observer_fn(alpha), alpha)
+    v = View(projector, observer_fn(alpha), alpha=alpha)
     dp = DipMeans(view=v, pval=0.05, sim_num=10, workers_num=10)
 
     x, _ = make_blobs(

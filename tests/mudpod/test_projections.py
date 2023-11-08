@@ -35,14 +35,14 @@ def test_johnson_lindenstrauss_dim(samples_num, projection_dim) -> None:
     "projector",
     [IdentityProjector(), JohnsonLindenstrauss()]
 )
-@pytest.mark.parametrize("observer_fn", [lambda a: PercentileObserver(0.95, a)])
+@pytest.mark.parametrize("observer_fn", [lambda a: PercentileObserver(0.95, alpha=a)])
 @pytest.mark.parametrize("alpha", [1, 2, 4])
 @pytest.mark.parametrize("dtype", sorted(['euclidean', 'mahalanobis']))
 @pytest.mark.parametrize("n_features", [200, 400])
 def test_view(projector, observer_fn, alpha, dtype, n_features) -> None:
     """A functional test for the View class."""
 
-    v = View(projector, observer_fn(alpha), alpha)
+    v = View(projector, observer_fn(alpha), alpha=alpha)
 
     x, _ = make_blobs(
         n_samples=1000,
