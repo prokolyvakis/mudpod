@@ -1,4 +1,4 @@
-# Unimodality in High-Dimensional Euclidean Space
+# mud-pod: A Multivariate Unimodality Test
 
 ![Build Status](https://github.com/prokolyvakis/mudpod/actions/workflows/test_workflow.yml/badge.svg)
 
