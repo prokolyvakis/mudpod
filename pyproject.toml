@@ -6,24 +6,12 @@ authors = [
     {name = "Prodromos Kolyvakis", email = "prokolyvakis@gmail.com"},
 ]
 dependencies = [
-    "scikit-learn>=1.2.2",
     "diptest>=0.5.2",
     "loguru>=0.7.0",
-    "pytest>=7.3.1",
-    "mypy>=1.2.0",
-    "pylint>=2.17.2",
+    "mpire>=2.7.1",
+    "scikit-learn>=1.2.2",
     "scipy>=1.9.3",
     "setuptools>=67.7.2",
-    "mpire>=2.7.1",
-    "torch>=2.0.0",
-    "transformers>=4.28.1",
-    "setuptools-rust>=1.6.0",
-    "datasets>=2.8.0",
-    "pillow>=9.5.0",
-    "plotly>=5.14.1",
-    "umap-learn>=0.5.3",
-    "docopt>=0.6.2",
-    "torchvision>=0.15.2",
 ]
 requires-python = ">=3.9"
 readme = "README.md"
@@ -37,3 +25,22 @@ build-backend = "pdm.pep517.api"
 type = "find_links"
 url = "https://download.pytorch.org/whl/cpu/torch_stable.html"
 name = "torch"
+
+[tool.pdm.dev-dependencies]
+test = [
+    "mypy>=1.2.0",
+    "plotly>=5.14.1",
+    "pylint>=2.17.2",
+    "pytest>=7.3.1",
+]
+exps = [
+    "datasets>=2.8.0",
+    "docopt>=0.6.2",
+    "pillow>=9.5.0",
+    "plotly>=5.14.1",
+    "setuptools-rust>=1.6.0",
+    "torch>=2.0.0",
+    "torchvision>=0.15.2",
+    "transformers>=4.28.1",
+    "umap-learn>=0.5.3",
+]
