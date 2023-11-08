@@ -26,7 +26,7 @@ curl -sSL https://raw.githubusercontent.com/pdm-project/pdm/main/install-pdm.py 
 Please run:
 
 ```bash
-pdm install
+pdm install -G core
 ```
 
 **Note**: If you want to run the tests or the experiments, please install the additional dependencies, i.e., `test` and `exps`, respectively, using the following command:
