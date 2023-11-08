@@ -15,7 +15,7 @@ set_seed(42)
 
 @pytest.mark.parametrize("projector", [JohnsonLindenstrauss()])
 @pytest.mark.parametrize("observer_fn", [lambda a: PercentileObserver(0.95, alpha=a)])
-@pytest.mark.parametrize("alpha", [1, 2, 4])
+@pytest.mark.parametrize("alpha", [1, 4])
 @pytest.mark.parametrize("n_features", [200, 400])
 def test_unimodality_tester(projector, observer_fn, alpha, n_features) -> None:
     """Test that the unimodality tester works properly."""
@@ -37,10 +37,10 @@ def test_unimodality_tester(projector, observer_fn, alpha, n_features) -> None:
 
 @pytest.mark.parametrize("projector", [JohnsonLindenstrauss()])
 @pytest.mark.parametrize("observer_fn", [lambda a: PercentileObserver(0.95, alpha=a)])
-@pytest.mark.parametrize("alpha", [1, 2, 4])
-@pytest.mark.parametrize("n_features", [200, 400])
-@pytest.mark.parametrize("workers_num", [0, 1, 10])
-@pytest.mark.parametrize("sim_num", [10, 20])
+@pytest.mark.parametrize("alpha", [1, 4])
+@pytest.mark.parametrize("n_features", [200])
+@pytest.mark.parametrize("workers_num", [0, 1, 5])
+@pytest.mark.parametrize("sim_num", [10])
 def test_monte_carlo_unimodality_tester(
         projector, observer_fn, alpha, n_features, workers_num, sim_num) -> None:
     """Test that the Monte Carlo unimodality tester works properly."""

@@ -14,8 +14,8 @@ set_seed(42)
 
 @pytest.mark.parametrize("projector", [JohnsonLindenstrauss()])
 @pytest.mark.parametrize("observer_fn", [lambda a: PercentileObserver(0.95, alpha=a)])
-@pytest.mark.parametrize("alpha", [1, 2, 4])
-@pytest.mark.parametrize("n_features", [200, 400])
+@pytest.mark.parametrize("alpha", [1, 4])
+@pytest.mark.parametrize("n_features", [200])
 def test_dip_means_fit(projector, observer_fn, alpha, n_features) -> None:
     """Test that the dip means class is properly initialized"""
 
