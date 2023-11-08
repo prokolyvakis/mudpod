@@ -1,6 +1,6 @@
 # Run only fast tests.
 
-name: Run pytest on fast tests.
+name: Run pytest on mudpod and experiments tests.
 
 on: push
 
