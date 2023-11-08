@@ -80,10 +80,17 @@ class View:
     dtype: InitVar[str] = 'mahalanobis'
     # The distance type.
 
+    alpha: float = 1.0
+    # The \alpha-unimodality positive index.
+
     distance: Distance = field(init=False, repr=True)
     # The distance.
 
     def __post_init__(self, dtype: str):
+        assert self.alpha > 0, (
+            f'The \alpha-unimodality index should be positive, {self.alpha} was given!'
+        )
+
         self.distance = Distance(dtype=dtype)
 
     def project(self, arr: np.ndarray, seeding: bool = False) -> np.ndarray:
@@ -125,4 +132,4 @@ class View:
         x = self.project(arr, seeding)
         o = self.observer.get(x)
 
-        return self.distance.compute(x, o)
+        return self.distance.compute(x, o, self.alpha)

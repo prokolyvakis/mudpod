@@ -1,6 +1,6 @@
 [project]
 name = "mudpod"
-version = "0.1"
+version = "0.2"
 description = " Testing Unimodality in Multivariate Euclidean Space"
 authors = [
     {name = "Prodromos Kolyvakis", email = "prokolyvakis@gmail.com"},

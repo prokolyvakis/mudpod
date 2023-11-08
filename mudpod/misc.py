@@ -26,7 +26,7 @@ class Distance:
             f'The type {self.dtype} is not supported!'
         )
 
-    def compute(self, arr: np.ndarray, o: np.ndarray) -> np.ndarray:
+    def compute(self, arr: np.ndarray, o: np.ndarray, a: float) -> np.ndarray:
         """Computes the distances from a given point.
 
         Args:
@@ -34,6 +34,7 @@ class Distance:
                     datapoints and the second being the features' size.
             o: A 2D numpy array with the first dimension always equal to 1 and
                     the second being the features' size.
+            a: An exponent power for the computed distances.
         Returns:
             The distances with respect to the observer `o`.
         """
@@ -44,11 +45,16 @@ class Distance:
                 c = np.cov(arr.T)
                 return mahalanobis(x, o, c)
 
-        return np.apply_along_axis(
+        ds = np.apply_along_axis(
             dist,
             0,
             arr.T
         )
+
+        if np.isclose(a, 1.0):
+            return ds
+        
+        return np.power(ds, a)
 
 
 def assert_correct_input_size(arr: np.ndarray) -> None:

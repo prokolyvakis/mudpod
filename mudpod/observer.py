@@ -34,11 +34,19 @@ class PercentileObserver(Observer):
     dtype: InitVar[str] = 'mahalanobis'
     # The distance type.
 
+    alpha: float = 1.0
+    # The \alpha-unimodality positive index.
+
     distance: Distance = field(init=False, repr=True)
     # The distance.
 
     def __post_init__(self, dtype: str):
         assert 0 < self.percentile < 1, 'The percentile should lie in (0, 1) interval.'
+
+        assert self.alpha > 0, (
+            f'The \alpha-unimodality index should be positive, {self.alpha} was given!'
+        )
+
         self.distance = Distance(dtype=dtype)
 
     def get(self, arr: np.ndarray) -> np.ndarray:
@@ -53,7 +61,7 @@ class PercentileObserver(Observer):
         assert_correct_input_size(arr)
         m = np.mean(arr, axis=0)
 
-        ds = self.distance.compute(arr, m)
+        ds = self.distance.compute(arr, m, self.alpha)
 
         t = np.percentile(
             ds,
