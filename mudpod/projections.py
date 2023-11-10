@@ -45,7 +45,13 @@ class IdentityProjector(Projector):
 
 @dataclass
 class JohnsonLindenstrauss(Projector):
-    """An estimate of the projection dim based on the Johnson-Lindenstrauss lemma."""
+    """
+    An estimate of the projection dim based on the Johnson-Lindenstrauss lemma.
+    
+    Refer to 'Random projections and compressed sensing' by Carlos Fernandez-Granda 
+    (2016), p.6 for the proof details regarding the projection dimension. Available at: 
+    https://cims.nyu.edu/~cfgranda/pages/OBDA_spring16/material/random_projections.pdf
+    """
     
     eps: float = 0.99
     # the distortion factor.
