@@ -38,12 +38,11 @@ class Distance:
         Returns:
             The distances with respect to the observer `o`.
         """
-        def dist(x: np.ndarray) -> float:
-            if self.dtype == 'euclidean':
-                return euclidean(x, o)
-            if self.dtype == 'mahalanobis':
-                c = np.cov(arr.T)
-                return mahalanobis(x, o, c)
+        if self.dtype == 'euclidean':
+            dist = lambda x: euclidean(x, o)
+        else:
+            c = np.cov(arr.T)
+            dist = lambda x: mahalanobis(x, o, c)
 
         ds = np.apply_along_axis(
             dist,
