@@ -38,6 +38,19 @@ pdm install -G GROUP_NAME
 
 ## References
 
+If you find this code useful in your research, please cite:
+
+```
+@misc{kolyvakis2023multivariate,
+      title={A Multivariate Unimodality Test Harnenssing the Dip Statistic of Mahalanobis Distances Over Random Projections}, 
+      author={Prodromos Kolyvakis and Aristidis Likas},
+      year={2023},
+      eprint={2311.16614},
+      archivePrefix={arXiv},
+      primaryClass={stat.ME}
+}
+```
+
 ## License
 
 This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
