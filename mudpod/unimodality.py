@@ -1,9 +1,10 @@
 """Definition of unimodality tests."""
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from math import ceil
 
 from diptest import diptest
 from loguru import logger
-from mpire import WorkerPool
 import numpy as np
 
 from mudpod.projections import View
@@ -61,8 +62,8 @@ class MonteCarloUnimodalityTest:
     # The number of workers.
 
     def __post_init__(self):
-        if self.workers_num < 0:
-            raise ValueError('The number of works must be non-negative!')
+        if self.workers_num <= 0:
+            raise ValueError('The number of works must be positive!')
         if self.sim_num <= 1:
             raise ValueError("The simulations' number must be greater than 1!")
 
@@ -75,20 +76,18 @@ class MonteCarloUnimodalityTest:
         Returns:
             The estimated probability.
         """
-        def generator(n):
-            i = 0
-            p = self.workers_num > 1
-            while i < n:
-                yield (x, p)
-                i += 1
+        def task_ranges(total, batch_size):
+            for start in range(0, total, batch_size):
+                yield (start, min(start + batch_size, total))
 
-        func = self.tester.test
-        with WorkerPool(n_jobs=self.workers_num) as pool:
-            tests = pool.map(
-                func,
-                generator(self.sim_num),
-                iterable_len=self.sim_num
-            )
+        def task(start_index, end_index):
+            results = [self.tester.test(x, self.workers_num > 1) for _ in range(start_index, end_index)]
+            return results
+        
+        batch_size = ceil(self.sim_num / self.workers_num)
+        with ThreadPoolExecutor(max_workers=self.workers_num) as executor:
+            futures = [executor.submit(task, start, end) for start, end in task_ranges(self.sim_num, batch_size)]
+            tests = [result for future in futures for result in future.result()]
 
         logger.debug(f'The result of the Monte Carlo simulations is: {tests}')
 

@@ -39,7 +39,7 @@ def test_unimodality_tester(projector, observer_fn, alpha, n_features) -> None:
 @pytest.mark.parametrize("observer_fn", [lambda a: PercentileObserver(0.95, alpha=a)])
 @pytest.mark.parametrize("alpha", [1, 4])
 @pytest.mark.parametrize("n_features", [200])
-@pytest.mark.parametrize("workers_num", [0, 1, 5])
+@pytest.mark.parametrize("workers_num", [1, 5])
 @pytest.mark.parametrize("sim_num", [10])
 def test_monte_carlo_unimodality_tester(
         projector, observer_fn, alpha, n_features, workers_num, sim_num) -> None:

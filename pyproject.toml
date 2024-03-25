@@ -8,7 +8,6 @@ authors = [
 dependencies = [
     "diptest>=0.5.2",
     "loguru>=0.7.0",
-    "mpire>=2.7.1",
     "scikit-learn>=1.2.2",
     "scipy>=1.9.3",
     "setuptools>=67.7.2",
