@@ -3,7 +3,7 @@
 ![Build Status](https://github.com/prokolyvakis/mudpod/actions/workflows/test_workflow.yml/badge.svg)
 [![arXiv](https://img.shields.io/badge/arXiv-2311.16614-b31b1b.svg)](https://arxiv.org/abs/2311.16614)
 
-This package offers tools to analyze the unimodality of data sampled from multivariate distributions lying in the Euclidean Space.
+This package offers tools to analyze the unimodality of data sampled from multivariate distributions lying in the Euclidean Space. To read an independent explanation and summary of this paper, please refer to the write-up by AIModels.fyi [here](https://www.aimodels.fyi/papers/arxiv/multivariate-unimodality-test-harnessing-dip-statistic-mahalanobis).
 
 ## Features
 
@@ -19,7 +19,7 @@ To install `mudpod`, you can use [`pdm`](https://pdm-project.org/latest/), which
 Ensure you have `pdm` installed on your system. If not, install it using the following command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/pdm-project/pdm/main/install-pdm.py | python3 -
+curl -sSL https://pdm-project.org/install-pdm.py | python3 -
 ```
 
 ### Project Setup
