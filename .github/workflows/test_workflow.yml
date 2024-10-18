@@ -17,7 +17,7 @@ jobs:
 
         -   name: Install pdm
             run: |
-                curl -sSL https://raw.githubusercontent.com/pdm-project/pdm/main/install-pdm.py | python3 -
+                curl -sSL https://pdm-project.org/install-pdm.py | python3 -
 
         -   name: Setup Python
             uses: actions/setup-python@v4
