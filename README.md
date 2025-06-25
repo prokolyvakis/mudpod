@@ -2,6 +2,7 @@
 
 ![Build Status](https://github.com/prokolyvakis/mudpod/actions/workflows/test_workflow.yml/badge.svg)
 [![arXiv](https://img.shields.io/badge/arXiv-2311.16614-b31b1b.svg)](https://arxiv.org/abs/2311.16614)
+[![UAI 2025](https://img.shields.io/badge/Accepted-UAI_2025-brightgreen)](https://openreview.net/pdf?id=f3KdHTMabv)
 
 This package offers tools to analyze the unimodality of data sampled from multivariate distributions lying in the Euclidean Space. To read an independent explanation and summary of this paper, please refer to the write-up by AIModels.fyi [here](https://www.aimodels.fyi/papers/arxiv/multivariate-unimodality-test-harnessing-dip-statistic-mahalanobis).
 
@@ -41,13 +42,13 @@ pdm install -G GROUP_NAME
 If you find this code useful in your research, please cite:
 
 ```
-@misc{kolyvakis2023multivariate,
-      title={A Multivariate Unimodality Test Harnenssing the Dip Statistic of Mahalanobis Distances Over Random Projections}, 
-      author={Prodromos Kolyvakis and Aristidis Likas},
-      year={2023},
-      eprint={2311.16614},
-      archivePrefix={arXiv},
-      primaryClass={stat.ME}
+@inproceedings{
+kolyvakis2025a,
+title={A Multivariate Unimodality Test Harnessing the Dip Statistic of Mahalanobis Distances Over Random Projections},
+author={Prodromos Kolyvakis and Aristidis Likas},
+booktitle={The 41st Conference on Uncertainty in Artificial Intelligence},
+year={2025},
+url={https://openreview.net/forum?id=f3KdHTMabv}
 }
 ```
 
