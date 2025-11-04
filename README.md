@@ -42,13 +42,20 @@ pdm install -G GROUP_NAME
 If you find this code useful in your research, please cite:
 
 ```
-@inproceedings{
-kolyvakis2025a,
-title={A Multivariate Unimodality Test Harnessing the Dip Statistic of Mahalanobis Distances Over Random Projections},
-author={Prodromos Kolyvakis and Aristidis Likas},
-booktitle={The 41st Conference on Uncertainty in Artificial Intelligence},
-year={2025},
-url={https://openreview.net/forum?id=f3KdHTMabv}
+@InProceedings{pmlr-v286-kolyvakis25a,
+  title = 	 {A Multivariate Unimodality Test Harnessing the Dip Statistic of Mahalanobis Distances Over Random Projections},
+  author =       {Kolyvakis, Prodromos and Likas, Aristidis},
+  booktitle = 	 {Proceedings of the Forty-first Conference on Uncertainty in Artificial Intelligence},
+  pages = 	 {2255--2268},
+  year = 	 {2025},
+  editor = 	 {Chiappa, Silvia and Magliacane, Sara},
+  volume = 	 {286},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {21--25 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v286/main/assets/kolyvakis25a/kolyvakis25a.pdf},
+  url = 	 {https://proceedings.mlr.press/v286/kolyvakis25a.html},
+  abstract = 	 {Unimodality, pivotal in statistical analysis, offers insights into dataset structures and drives sophisticated analytical procedures. While unimodality’s confirmation is straightforward for one-dimensional data using methods like Silverman’s approach and Hartigans’ dip statistic, its generalization to higher dimensions remains challenging. By extrapolating one-dimensional unimodality principles to multi-dimensional spaces through linear random projections and leveraging point-to-point distancing, our method, rooted in $\alpha$-unimodality assumptions, presents a novel multivariate unimodality test named $\textit{mud-pod}$. Both theoretical and empirical studies confirm the efficacy of our method in unimodality assessment of multidimensional datasets as well as in estimating the number of clusters.}
 }
 ```
 
